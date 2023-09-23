@@ -459,7 +459,8 @@ body.dark-theme{
 }
 
 .home__social{
-  height: max-content;
+  height: 30px;
+  width: 30px;
   position: absolute;
   left: -3rem;
   top: 0;
@@ -1459,7 +1460,7 @@ body.dark-theme{
     margin-bottom: 5rem;
   }
   .about__buttons{
-    justify-content: initial;
+    justify-content: center;
   }
   .button__ghost{
     padding: .75rem;
