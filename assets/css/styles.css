@@ -168,7 +168,7 @@ body.dark-theme{
 }
 /*=============== REUSABLE CSS CLASSES ===============*/
 .container {
-  max-width: 1120px;
+  max-width: 1300px;
   margin-inline: 1.5rem;
 }
 
@@ -871,6 +871,24 @@ body.dark-theme{
   color: var(--first-color);
 }
 
+/*=============== MISC ===============*/
+.listen{
+  text-align: center;
+}
+.misc__line{
+  filter: invert(1);
+  width: 40px;
+  margin: 20px;
+  position: relative;
+  left: 40%;
+}
+.dark-theme .misc__info strong{
+  color: var(--first-color);
+}
+.dark-theme .misc__line{
+  filter: none;
+}
+
 
 /*=============== CONTACT ===============*/
 .contact{
@@ -1194,7 +1212,9 @@ body.dark-theme{
     grid-template-columns: 350px;
     justify-content: center;
   }
-
+  .misc__line{
+    left: 45%;
+  }
   .contact__data{
     width: 350px;
     padding: 4rem 1.5rem;
@@ -1265,7 +1285,7 @@ body.dark-theme{
 
   .nav{
     height: calc(var(--header-height) + 2rem);
-    column-gap: 4rem;
+    column-gap: 3rem;
   }
   .nav__close,
   .nav__toggle,
@@ -1275,7 +1295,7 @@ body.dark-theme{
   }
   .nav__list{
     flex-direction: row;
-    column-gap: 4rem;
+    column-gap: 3rem;
   }
 
   .nav__menu{
@@ -1400,7 +1420,23 @@ body.dark-theme{
     font-size: 1.5rem;
     padding: 0.5rem;
   }
-
+  .misc__container{
+    grid-template-columns: 600px 600px;
+    gap: 1rem 5rem;
+    align-items: center;
+    padding-block: 1rem;
+  }
+  .misc__kunal{
+    order: -1;
+    grid-row: 1/3;
+  }
+  .section__subtitle{
+    margin-bottom: 5rem;
+  }
+  .misc__line{
+    rotate: -90deg;
+    transform: translate(5rem, 12rem)
+  }
   .about__container{
     grid-template-columns: 440px 525px;
     gap: 1rem 9rem;

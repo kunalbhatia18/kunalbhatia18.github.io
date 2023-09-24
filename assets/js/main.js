@@ -55,24 +55,6 @@ skillsHeader.forEach((el) =>{
 })
 
 /*=============== QUALIFICATIONS TABS ===============*/
-// const tabs = document.querySelectorAll('[data-target]')
-// const tabContents = document.querySelectorAll('[data-content]')
-
-// tabs.forEach(tab => {
-//     tab.addEventListener('click', () =>{
-//         const target = document.querySelectorAll(tab.dataset.target)
-
-//         tabContents.forEach(tabContent =>{
-//             tabContent.classList.remove('qualification__active')
-//         })
-//         target.classList.add('qualification__active')
-
-//         tabs.forEach(tab => {
-//             tab.classList.remove('qualification__active')
-//         })
-//         tab.classList.add('qualification__active')
-//     })
-// })
 
 const tabs = document.querySelectorAll('[data-target]'),
     tabContents = document.querySelectorAll('[data-content]')
@@ -189,8 +171,8 @@ const sr = ScrollReveal({
     delay: 300,
 })
 
-sr.reveal(`.home__kunal, .about__image, .contact__mail`, {origin: 'right'})
+sr.reveal(`.home__kunal, .about__image, .contact__mail, .misc__kunal`, {origin: 'right'})
 sr.reveal(`.home__name, .home__info, .qualification__button,
            .about__container, .about__info,
-           .contact__social, .contact__data`, {origin: 'left'})
+           .contact__social, .contact__data, .misc__spotify`, {origin: 'left'})
 sr.reveal(`.qualification__sections,  .skills__container`, {interval:100})
