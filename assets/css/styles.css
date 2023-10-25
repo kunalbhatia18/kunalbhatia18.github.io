@@ -166,6 +166,18 @@ body.dark-theme{
 .dark-theme::-webkit-scrollbar-thumb:hover{
   background-color: hsl(0, 0, 40%);
 }
+
+.dark-theme .projects__card:hover{
+  background-color: var(--black-color);
+}
+
+.dark-theme .projects__button{
+  background-color: var(--title-color);
+}
+.dark-theme .projects__button i{
+  filter: invert(1);
+}
+
 /*=============== REUSABLE CSS CLASSES ===============*/
 .container {
   max-width: 1300px;
