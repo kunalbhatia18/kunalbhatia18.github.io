@@ -171,8 +171,8 @@ const sr = ScrollReveal({
     delay: 300,
 })
 
-sr.reveal(`.home__kunal, .about__image, .contact__mail, .misc__kunal`, {origin: 'right'})
-sr.reveal(`.home__name, .home__info, .qualification__button,
+sr.reveal(`.home__kunal, .about__image, .contact__mail, .misc__kunal, .qualification__button`, {origin: 'right'})
+sr.reveal(`.home__name, .home__info,
            .about__container, .about__info,
-           .contact__social, .contact__data, .misc__spotify`, {origin: 'left'})
-sr.reveal(`.qualification__sections,  .skills__container`, {interval:100})
+           .contact__social, .contact__data, .misc__spotify, .skills__container, .qualification__sections `, {origin: 'left'})
+sr.reveal(` .projects__card`, {interval:100})
