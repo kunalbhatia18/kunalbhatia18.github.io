@@ -1,1 +1,1 @@
-<http://www.kunalbhatia.tech>
+<https://kunalbhatia.tech/>
