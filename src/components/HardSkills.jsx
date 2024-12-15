@@ -1,14 +1,14 @@
 const HardSkills = () => {
   return (
-    <section className="px-16 py-12 border-t">
-      <div className="flex gap-0">
+    <section className="px-6 sm:px-16 py-12 border-t">
+      <div className="flex flex-wrap gap-6">
         {/* Left Sidebar */}
-        <div className="w-1/6">
+        <div className="w-full sm:w-1/6">
           <p className="font-bold text-sm">hard skills</p>
         </div>
 
         {/* Right Content */}
-        <div className="flex-1 space-y-12">
+        <div className="flex-1 space-y-8">
           {/* AI and Machine Learning */}
           <div>
             <p className="font-bold text-sm mb-2">ai and machine learning</p>

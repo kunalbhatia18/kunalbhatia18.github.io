@@ -1,9 +1,9 @@
 const Current = () => {
   return (
-    <section className="px-16 py-12 border-t">
-      <div className="flex gap-0">
+    <section className="px-6 sm:px-16 py-12 border-t">
+      <div className="flex flex-wrap gap-6">
         {/* Left Sidebar */}
-        <div className="w-1/6">
+        <div className="w-full sm:w-1/6">
           <p className="font-bold text-sm">current</p>
         </div>
 

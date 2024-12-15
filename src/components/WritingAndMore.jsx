@@ -1,14 +1,14 @@
 const WritingAndMore = () => {
   return (
-    <section className="px-16 py-12 border-t">
-      <div className="flex gap-0">
+    <section className="px-6 sm:px-16 py-12 border-t">
+      <div className="flex flex-wrap gap-6">
         {/* Left Sidebar */}
-        <div className="w-1/6">
+        <div className="w-full sm:w-1/6">
           <p className="font-bold text-sm">writing and more</p>
         </div>
 
         {/* Right Content */}
-        <div className="flex-1 space-y-12">
+        <div className="flex-1 space-y-8">
           {/* Articles */}
           <div>
             <p className="font-bold text-sm mb-2">articles</p>
@@ -35,13 +35,11 @@ const WritingAndMore = () => {
                   My Experience with SCoRe Lab in GCI
                 </a>
                 <p className="text-sm leading-relaxed">
-                  <p className="text-sm leading-relaxed">
-                    A throwback to my journey as a 16-year-old contributing to
-                    open-source projects with SCoRe Lab during Google Code-In
-                    2019. Looking back now, it’s a little embarrassing to see
-                    how much I’ve grown since then, but this experience laid the
-                    foundation for my passion for tech and coding.
-                  </p>
+                  A throwback to my journey as a 16-year-old contributing to
+                  open-source projects with SCoRe Lab during Google Code-In
+                  2019. Looking back now, it’s a little embarrassing to see how
+                  much I’ve grown since then, but this experience laid the
+                  foundation for my passion for tech and coding.
                 </p>
               </div>
             </div>
