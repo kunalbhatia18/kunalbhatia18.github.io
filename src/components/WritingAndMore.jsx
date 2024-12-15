@@ -61,10 +61,9 @@ const WritingAndMore = () => {
                   Let’s Talk Krypto: Blockchain and Startups
                 </a>
                 <p className="text-sm leading-relaxed">
-                  Creator and host of the &quot;Let’s Talk Krypto&quot; podcast.
-                  This podcast was born during my first startup journey and
-                  explored blockchain, cryptocurrency, and the entrepreneurial
-                  mindset.
+                  Creator of the &quot;Let’s Talk Krypto&quot; podcast. This
+                  podcast was born during my first startup journey and explored
+                  blockchain, cryptocurrency, and the entrepreneurial mindset.
                 </p>
               </div>
             </div>
