@@ -12,7 +12,13 @@ const Current = () => {
           {/* Role */}
           <div>
             <p className="text-sm">
-              <span className="font-bold">Role:</span> SDE at RBIH
+              <span className="font-bold">Role:</span> CEO @{" "}
+              <a
+                className="text-blue-600 underline"
+                href="https://kunalis.me/encephalo/"
+              >
+                encephalo.io
+              </a>
             </p>
           </div>
 
