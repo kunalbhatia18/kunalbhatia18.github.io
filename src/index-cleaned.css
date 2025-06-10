@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scrolling and overscroll color */
+html {
+  scroll-behavior: smooth;
+  background-color: #0a0a12;
+}
+
+body {
+  background-color: #0a0a12;
+  overscroll-behavior: none;
+}
+
+/* Fix overscroll color on all elements */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* CSS Variables for dynamic effects */
+:root {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* TYPOGRAPHY SYSTEM - Cleaner scale */
+.heading-xl { @apply font-inter text-5xl lg:text-7xl font-bold leading-tight tracking-tight; }
+.heading-lg { @apply font-inter text-3xl lg:text-5xl font-bold leading-tight tracking-tight; }
+.heading-md { @apply font-inter text-xl lg:text-2xl font-semibold; }
+.body-text { @apply font-inter text-base lg:text-lg; }
+.body-sm { @apply font-inter text-sm; }
+.body-xs { @apply font-inter text-xs; }
+
+/* Improved Spacing System */
+.section-spacing { @apply py-24 lg:py-32; }
+.hero-spacing { @apply pt-32 pb-16 lg:pt-40 lg:pb-24; }
+.content-spacing { @apply px-6 lg:px-8; }
+.stack-spacing { @apply space-y-6 lg:space-y-8; }
+
+/* Simplified Glass Effects */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Cleaner hover effects */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Simplified gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Cleaner animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Easter egg animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Simplified button styles */
+.btn-primary {
+  @apply rounded-full bg-white text-black px-8 py-4 font-semibold transition-all hover:bg-white/90;
+}
+
+.btn-secondary {
+  @apply rounded-full border border-white/20 px-8 py-4 font-semibold transition-all hover:bg-white/10 hover:border-white/40;
+}
+
+/* Enhanced Focus States */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Custom Scrollbar - Subtle */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Utility classes for better spacing */
+.breathing-room { @apply mb-12 lg:mb-16; }
+.tight-stack { @apply space-y-2 lg:space-y-3; }
+.loose-stack { @apply space-y-8 lg:space-y-12; }
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
