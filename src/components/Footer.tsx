@@ -4,7 +4,6 @@ export function Footer() {
     'Caffeinating and creating in Bangalore',
     'Debugging the universe from Bangalore',
     'Compiling dreams in Bangalore',
-    'Teaching AI to dance in Bangalore',
     'Optimizing life from Bangalore',
     'Writing poetry in TypeScript from Bangalore',
     'Making magic happen in Bangalore'

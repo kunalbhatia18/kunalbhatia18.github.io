@@ -118,7 +118,7 @@ function SkillsMatrix() {
     { category: 'AI/ML', items: ['GPT-4', 'FAISS', 'LangChain', 'MLflow'] },
     { category: 'Backend', items: ['FastAPI', 'Kafka', 'Redis', 'PostgreSQL'] },
     { category: 'Frontend', items: ['React', 'TypeScript', 'Framer', 'Next.js'] },
-    { category: 'Cloud', items: ['AWS', 'Vercel', 'Docker', 'K8s'] },
+    { category: 'Cloud', items: ['AWS', 'Vercel', 'Docker', 'GCP'] },
   ];
 
   return (
@@ -160,10 +160,10 @@ function SkillsMatrix() {
 // ---- Hobby Strip ----
 function HobbyStrip() {
   const hobbies = [
-    { src: '/run.jpg', label: 'Marathon Runner', desc: 'Sub 4-hour' },
-    { src: '/stage.jpg', label: 'Lead Vocalist', desc: 'Rock band' },
-    { src: '/cook.jpg', label: 'Home Chef', desc: 'Italian cuisine' },
-    { src: '/travel.jpg', label: 'Trek Leader', desc: 'Himalayas' }
+    { src: '/marathon-race.jpg', label: 'Marathon Runner', desc: 'Sub-4hr finisher' },
+    { src: '/lakeside-adventure.jpg', label: 'Adventure Seeker', desc: 'Exploring horizons' },
+    { src: '/gym-training.jpg', label: 'Fitness Enthusiast', desc: 'Strength & discipline' },
+    { src: '/gym-transformation.jpg', label: 'Optimization Mindset', desc: 'Results-driven' }
   ];
   
   return (
@@ -192,7 +192,7 @@ function HobbyStrip() {
                 <img 
                   src={hobby.src} 
                   alt={hobby.label} 
-                  className="w-full h-32 sm:h-48 object-cover transition-transform duration-500 group-hover:scale-110" 
+                  className="w-full h-32 sm:h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
@@ -222,10 +222,10 @@ function CTA() {
         className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center"
       >
         <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">
-          Ready to build the next <span className="gradient-text">breakout product?</span>
+          Building the future of <span className="gradient-text">AI at scale</span>
         </h2>
         <p className="text-base sm:text-lg text-white/70 mb-8 sm:mb-10">
-          Let's turn your vision into reality with AI that actually ships.
+          From 35ms inference to production systems serving 3M+ users globally.
         </p>
         <motion.a 
           href="mailto:kunal@kunalis.me" 
@@ -233,7 +233,7 @@ function CTA() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          Start the Conversation
+          Let's Connect
         </motion.a>
       </motion.div>
     </section>

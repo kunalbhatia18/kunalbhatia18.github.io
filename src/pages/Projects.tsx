@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar, Footer } from '../components';
 
@@ -93,7 +93,7 @@ function FilterBar({ active, setActive }: { active: string, setActive: (c: strin
   );
 }
 
-const ProjectCard = React.forwardRef<HTMLDivElement, { project: any, index: number, onOpen: (p: any) => void }>(({ project, index, onOpen }, ref) => {
+const ProjectCard = forwardRef<HTMLDivElement, { project: any, index: number, onOpen: (p: any) => void }>(({ project, index, onOpen }, ref) => {
   return (
     <motion.div
       ref={ref}

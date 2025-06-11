@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Smooth scrolling and overscroll color */
+/* OPTIMIZED: Enhanced smooth scrolling and overscroll color */
 html {
   scroll-behavior: smooth;
   background-color: #0a0a12;
@@ -11,6 +11,10 @@ html {
 body {
   background-color: #0a0a12;
   overscroll-behavior: none;
+  /* PERFORMANCE: Enable hardware acceleration without breaking fixed positioning */
+  /* Removed transform: translateZ(0) as it breaks fixed positioning */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Fix overscroll color on all elements */
@@ -18,10 +22,53 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Minimal essential animations only */
+/* Ensure no transforms on html/body that break fixed positioning */
+html, body {
+  transform: none !important;
+}
+
+/* OPTIMIZED: Advanced GPU layer management */
+.gpu-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+/* PERFORMANCE: Smart GPU layer for animations */
+.gpu-animated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
+}
+
+/* PERFORMANCE: GPU layer for background elements */
+.gpu-background {
+  will-change: background-position, filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: paint;
+}
+
+/* PERFORMANCE: GPU layer for text animations */
+.gpu-text {
+  will-change: background-position;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Removed contain: layout as it affects text positioning */
+}
+
+/* OPTIMIZED: Minimal essential animations only */
 @keyframes pulseSlow {
   0%, 100% { opacity: 0.15; }
   50% { opacity: 0.25; }
+}
+
+/* OPTIMIZED: Hide scrollbar for suggestion pills */
+.suggestions-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* TYPOGRAPHY SYSTEM - ALL INTER */
@@ -39,33 +86,48 @@ body {
 .card-spacing { @apply p-8; }
 .button-spacing { @apply px-8 py-3; }
 
-/* Enhanced Glass Effects - Optimized */
+/* OPTIMIZED: Enhanced Glass Effects with GPU optimization */
 .glass {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  /* PERFORMANCE: Advanced GPU layer management */
+  will-change: backdrop-filter, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
 }
 
 .glass-dark {
   background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  /* PERFORMANCE: Advanced GPU layer management */
+  will-change: backdrop-filter, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
 }
 
-/* Optimized hover effects - Fixed performance */
+/* OPTIMIZED: Enhanced hover effects with advanced GPU optimization */
 .hover-glow {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* PERFORMANCE: Advanced GPU layer for hover animations */
   will-change: transform;
-  backface-visibility: hidden; /* Fix rendering artifacts */
-  perspective: 1000px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
 }
 .hover-glow:hover {
-  transform: translateY(-4px) translateZ(0); /* Force GPU acceleration */
+  transform: translateY(-4px) translateZ(0);
 }
 
-/* Gradient text - Enhanced with glow */
+/* OPTIMIZED: Gradient text with advanced GPU optimization */
 .gradient-text {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   background-size: 200% 200%;
@@ -73,59 +135,121 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientShift 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.3));
+  filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.25));
+  line-height: 1.2;
+  padding-bottom: 0.1em;
+  opacity: 1;
+  /* PERFORMANCE: Minimal GPU optimization without affecting layout */
+  will-change: background-position;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Removed isolation and contain properties that affect positioning */
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% { 
+    background-position: 0% 50%; 
+    transform: translateZ(0); /* Maintain layer */
+  }
+  50% { 
+    background-position: 100% 50%; 
+    transform: translateZ(0); /* Maintain layer */
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-  20%, 40%, 60%, 80% { transform: translateX(2px); }
+  0%, 100% { transform: translateX(0) translateZ(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) translateZ(0); }
+  20%, 40%, 60%, 80% { transform: translateX(2px) translateZ(0); }
 }
 
-/* Premium button - Fixed white smudge artifacts */
+/* OPTIMIZED: Premium button with advanced GPU optimization */
 .premium-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* PERFORMANCE: Advanced GPU layer management */
   will-change: transform, box-shadow;
-  isolation: isolate; /* Fix stacking context issues */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
 }
+
 .premium-button::before {
   content: '';
   position: absolute;
   top: 0;
-  /* left: -100%; */
+  left: -100%;
   width: 100%;
   height: 100%;
-  /* background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%); */
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
   transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   z-index: 1;
+  /* PERFORMANCE: Advanced GPU layer for shine effect */
+  will-change: left, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: strict;
 }
+
 .premium-button:hover::before {
-  /* left: 100%; */
+  left: 100%;
   opacity: 1;
 }
+
 .premium-button:hover {
   background: linear-gradient(135deg, #7c8aea 0%, #8e5bbc 100%);
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-2px) scale(1.02) translateZ(0);
   box-shadow: 
     0 20px 40px -12px rgba(99, 102, 241, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+
 .premium-button:active {
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1) translateZ(0);
   box-shadow: 0 10px 20px -8px rgba(99, 102, 241, 0.3);
 }
+
 /* Ensure text is always on top */
 .premium-button > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* OPTIMIZED: Premium button WITHOUT shine - advanced GPU optimization */
+.premium-button-no-shine {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* PERFORMANCE: Advanced GPU layer management */
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
+}
+
+.premium-button-no-shine:hover {
+  background: linear-gradient(135deg, #7c8aea 0%, #8e5bbc 100%);
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  box-shadow: 
+    0 20px 40px -12px rgba(99, 102, 241, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.premium-button-no-shine:active {
+  transform: translateY(0) scale(1) translateZ(0);
+  box-shadow: 0 10px 20px -8px rgba(99, 102, 241, 0.3);
+}
+
+/* Ensure text is always on top */
+.premium-button-no-shine > * {
   position: relative;
   z-index: 2;
 }
@@ -145,7 +269,7 @@ body {
   overflow: hidden;
 }
 
-/* Enhanced Focus States */
+/* OPTIMIZED: Enhanced Focus States with better performance */
 *:focus {
   outline: none;
 }
@@ -156,42 +280,10 @@ body {
   border-radius: 4px;
 }
 
-/* Mobile-specific optimizations */
-@media (max-width: 768px) {
-  /* Prevent horizontal scroll */
-  body {
-    overflow-x: hidden;
-  }
-  
-  /* Optimize touch interactions */
-  .hover-glow:hover {
-    transform: none;
-  }
-  
-  .hover-glow:active {
-    transform: translateY(-2px);
-  }
-  
-  /* Fix premium button on mobile - prevent white artifacts */
-  .premium-button:hover {
-    transform: translateY(-1px) scale(1.01);
-    box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.3);
-  }
-  
-  .premium-button::before {
-    display: none; /* Disable shine effect on mobile to prevent artifacts */
-  }
-  
-  /* Ensure text is readable on small screens */
-  .gradient-text {
-    -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.1);
-  }
-}
-
 button:focus-visible, 
 a:focus-visible {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), 0 0 12px rgba(99, 102, 241, 0.2);
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
   transition: all 0.2s ease;
 }
 
@@ -201,7 +293,7 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 8px rgba(99, 102, 241, 0.15);
 }
 
-/* Custom Scrollbar Styling */
+/* OPTIMIZED: Custom Scrollbar Styling with better performance */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
@@ -219,8 +311,109 @@ textarea:focus {
   background: linear-gradient(180deg, rgba(99, 102, 241, 0.3), rgba(139, 69, 195, 0.3));
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  /* PERFORMANCE: Optimize scrollbar rendering */
+  will-change: background;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(99, 102, 241, 0.5), rgba(139, 69, 195, 0.5));
+}
+
+/* OPTIMIZED: Mobile-specific optimizations with better performance */
+@media (max-width: 768px) {
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* OPTIMIZED: Better touch interactions */
+  .hover-glow:hover {
+    transform: translateZ(0); /* Remove hover effects on mobile for performance */
+  }
+  
+  .hover-glow:active {
+    transform: translateY(-2px) translateZ(0);
+  }
+  
+  /* OPTIMIZED: Better mobile premium button performance */
+  .premium-button:hover {
+    transform: translateY(-1px) scale(1.01) translateZ(0);
+    box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.3);
+  }
+  
+  .premium-button::before {
+    display: none; /* Disable shine effect on mobile for performance */
+  }
+  
+  /* Ensure text is readable on small screens - removed text stroke that created white border */
+  .gradient-text {
+    /* Removed -webkit-text-stroke property to eliminate white border effect */
+  }
+  
+  /* OPTIMIZED: Reduce backdrop filters on mobile for performance */
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .glass-dark {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* PERFORMANCE: Optimize high-refresh rate displays */
+@media (min-resolution: 2dppx) {
+  .premium-button,
+  .hover-glow,
+  .gradient-text {
+    /* Ensure crisp rendering on high-DPI displays */
+    transform: translateZ(0);
+  }
+}
+
+/* PERFORMANCE: Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text {
+    animation: none;
+    background-position: 0% 50%;
+  }
+  
+  .premium-button::before {
+    transition: none;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* OPTIMIZED: Advanced GPU acceleration utilities */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
+}
+
+.smooth-edges {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* PERFORMANCE: Container queries for modern layouts */
+@container (min-width: 768px) {
+  .responsive-text {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
+}
+
+/* OPTIMIZED: Better layer management */
+.new-layer {
+  isolation: isolate;
+  will-change: transform;
+  transform: translateZ(0);
 }

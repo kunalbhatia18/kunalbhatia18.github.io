@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minimize2 } from 'lucide-react';
 
 interface Msg {
   id: string;
@@ -92,7 +91,7 @@ export function FullscreenChat({ isOpen, onClose }: FullscreenChatProps) {
   }
 
   function startVoice() {
-    // @ts-ignore
+    // @ts-expect-error - SpeechRecognition API may not be available in all browsers
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
     const rec = new SR(); 

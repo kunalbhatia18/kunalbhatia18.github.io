@@ -1,25 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const frameRef = useRef<number>(0);
+  const particlesRef = useRef<any[]>([]);
+  const mouseRef = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size
-    const setCanvasSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    setCanvasSize();
-    window.addEventListener('resize', setCanvasSize);
-
-    // Particle class
-    class Particle {
+  // Optimized particle class with reduced calculations
+  const Particle = useMemo(() => {
+    return class {
       x: number;
       y: number;
       size: number;
@@ -27,108 +16,149 @@ export function AnimatedBackground() {
       speedY: number;
       opacity: number;
       hue: number;
-
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5 + 0.2;
+      baseOpacity: number;
+      
+      constructor(width: number, height: number) {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 1.5 + 0.5; // Slightly smaller particles
+        this.speedX = (Math.random() - 0.5) * 0.3; // Slower movement
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.baseOpacity = Math.random() * 0.3 + 0.1; // Reduced base opacity
+        this.opacity = this.baseOpacity;
         this.hue = Math.random() * 60 + 240; // Blue to purple range
       }
 
-      update() {
+      update(width: number, height: number, time: number) {
         this.x += this.speedX;
         this.y += this.speedY;
 
         // Wrap around screen
-        if (this.x > canvas.width) this.x = 0;
-        if (this.x < 0) this.x = canvas.width;
-        if (this.y > canvas.height) this.y = 0;
-        if (this.y < 0) this.y = canvas.height;
+        if (this.x > width) this.x = 0;
+        if (this.x < 0) this.x = width;
+        if (this.y > height) this.y = 0;
+        if (this.y < 0) this.y = height;
 
-        // Gentle opacity animation
-        this.opacity = Math.sin(Date.now() * 0.001 + this.x * 0.01) * 0.2 + 0.3;
+        // Optimized opacity animation (less frequent calculations)
+        this.opacity = this.baseOpacity + Math.sin(time * 0.001 + this.x * 0.005) * 0.1;
       }
 
-      draw() {
+      draw(ctx: CanvasRenderingContext2D) {
         ctx.fillStyle = `hsla(${this.hue}, 70%, 60%, ${this.opacity})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
       }
-    }
+    };
+  }, []);
 
-    // Create particles
-    const particles: Particle[] = [];
-    const particleCount = 100;
+  // Optimized canvas sizing
+  const setCanvasSize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const { innerWidth, innerHeight } = window;
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+
+    // Recreate particles with new dimensions
+    particlesRef.current = [];
+    const particleCount = Math.min(50, Math.floor((innerWidth * innerHeight) / 20000)); // Adaptive particle count
     for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
+      particlesRef.current.push(new Particle(innerWidth, innerHeight));
     }
+  }, [Particle]);
 
-    // Mouse interaction
-    let mouseX = canvas.width / 2;
-    let mouseY = canvas.height / 2;
-    canvas.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
+  // Optimized mouse tracking (throttled)
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    mouseRef.current.x = e.clientX;
+    mouseRef.current.y = e.clientY;
+  }, []);
 
-    // Animation loop
-    let animationId: number;
-    const animate = () => {
-      ctx.fillStyle = 'rgba(10, 10, 18, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Main animation loop with performance optimizations
+  const animate = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-      // Draw connections
-      particles.forEach((particle, i) => {
-        particles.slice(i + 1).forEach(other => {
-          const dx = particle.x - other.x;
-          const dy = particle.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-          if (distance < 150) {
-            const opacity = (1 - distance / 150) * 0.15;
+    const { width, height } = canvas;
+    const time = Date.now();
+    const particles = particlesRef.current;
+    const mouse = mouseRef.current;
+
+    // Clear canvas with trail effect (more efficient than full clear)
+    ctx.fillStyle = 'rgba(10, 10, 18, 0.1)'; // More opaque for better performance
+    ctx.fillRect(0, 0, width, height);
+
+    // Update and draw particles (reduced mouse interaction frequency)
+    particles.forEach((particle, i) => {
+      // Only check mouse interaction every 4th frame for performance
+      if (i % 4 === 0) {
+        const dx = mouse.x - particle.x;
+        const dy = mouse.y - particle.y;
+        const distance = dx * dx + dy * dy;
+
+        if (distance < 30000) { // Reduced interaction range
+          const force = (1 - distance / 30000) * 0.03; // Reduced force
+          particle.speedX += dx * force * 0.0003;
+          particle.speedY += dy * force * 0.0003;
+        }
+      }
+
+      particle.update(width, height, time);
+      particle.draw(ctx);
+
+      // Further reduced connection drawing (every 3rd particle)
+      if (i % 3 === 0) {
+        particles.slice(i + 3).forEach(other => {
+          const dx2 = particle.x - other.x;
+          const dy2 = particle.y - other.y;
+          const distance2 = dx2 * dx2 + dy2 * dy2;
+
+          if (distance2 < 10000) { // Reduced connection range (100px)
+            const opacity = (1 - distance2 / 10000) * 0.08; // Further reduced opacity
             ctx.strokeStyle = `rgba(99, 102, 241, ${opacity})`;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.3; // Thinner lines
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(other.x, other.y);
             ctx.stroke();
           }
         });
+      }
+    });
 
-        // Mouse interaction
-        const dx = mouseX - particle.x;
-        const dy = mouseY - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 200) {
-          const force = (1 - distance / 200) * 0.1;
-          particle.speedX += dx * force * 0.001;
-          particle.speedY += dy * force * 0.001;
-        }
+    frameRef.current = requestAnimationFrame(animate);
+  }, []);
 
-        particle.update();
-        particle.draw();
-      });
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animate();
+  useEffect(() => {
+    setCanvasSize();
+    
+    // Use passive listeners for better performance
+    window.addEventListener('resize', setCanvasSize, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    
+    frameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('resize', setCanvasSize);
-      cancelAnimationFrame(animationId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
     };
-  }, []);
+  }, [setCanvasSize, handleMouseMove, animate]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 -z-30 opacity-50"
-      style={{ filter: 'blur(1px)' }}
+      className="fixed inset-0 -z-30 opacity-40" // Reduced opacity
+      style={{ 
+        filter: 'blur(0.5px)', // Reduced blur
+        willChange: 'auto' // Let browser decide
+      }}
     />
   );
 }
