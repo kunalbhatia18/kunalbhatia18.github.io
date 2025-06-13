@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://kunalis.me/sitemap.xml
+
+# Block any bots from accessing source maps or config files
+Disallow: /*.map$
+Disallow: /vite.config.*
+Disallow: /tsconfig.*
+Disallow: /.env*
