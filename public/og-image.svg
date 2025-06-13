@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a12;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0f0e17;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15151d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Background decoration -->
+  <circle cx="1000" cy="100" r="150" fill="url(#logoGradient)" opacity="0.1"/>
+  <circle cx="200" cy="500" r="100" fill="url(#logoGradient)" opacity="0.08"/>
+  
+  <!-- Main logo "k." - Large centered -->
+  <g transform="translate(480, 200)">
+    <!-- Logo background circle -->
+    <circle cx="120" cy="120" r="110" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.3"/>
+    
+    <!-- Main "k" letter -->
+    <path d="M 60 60 L 60 180 L 80 180 L 80 125 L 140 180 L 170 180 L 105 120 L 165 60 L 135 60 L 85 110 L 80 105 L 80 60 Z" 
+          fill="url(#logoGradient)" 
+          filter="url(#glow)"/>
+    
+    <!-- Period/dot -->
+    <circle cx="185" cy="165" r="12" fill="url(#logoGradient)" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Text content -->
+  <text x="600" y="450" text-anchor="middle" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold">
+    Kunal Bhatia
+  </text>
+  <text x="600" y="490" text-anchor="middle" fill="url(#textGradient)" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="500">
+    AI/ML Engineer • 35ms inference • 3M+ users served
+  </text>
+  <text x="600" y="530" text-anchor="middle" fill="#ffffff80" font-family="system-ui, -apple-system, sans-serif" font-size="20">
+    Building lightning-fast AI products in Bangalore
+  </text>
+  
+  <!-- URL -->
+  <text x="600" y="580" text-anchor="middle" fill="#ffffff60" font-family="system-ui, -apple-system, sans-serif" font-size="18">
+    kunalis.me
+  </text>
+</svg>

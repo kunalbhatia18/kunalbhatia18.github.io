@@ -83,7 +83,7 @@ export default function Landing() {
         description="Kunal Bhatia - AI/ML Engineer building lightning-fast products. 35ms inference, 3M+ users served. React, FastAPI, GPT-4. Based in Bangalore."
         keywords={['AI Engineer', 'ML Engineer', 'React Developer', 'FastAPI', 'GPT-4', 'Machine Learning', 'Bangalore', 'TypeScript', 'Voice AI', 'Real-time Systems']}
         url="https://kunalis.me"
-        image="https://kunalis.me/profile-purple.jpg"
+        image="https://kunalis.me/og-image.svg"
       />
       <motion.main 
       initial={{ opacity: 0, y: 5 }}

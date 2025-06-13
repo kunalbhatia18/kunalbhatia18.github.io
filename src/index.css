@@ -278,6 +278,58 @@ html, body {
   z-index: 2;
 }
 
+/* NAVBAR: Premium button with white background sweep */
+.premium-button-navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* PERFORMANCE: Advanced GPU layer management */
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: layout style;
+}
+
+.premium-button-navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  z-index: 1;
+  /* PERFORMANCE: Advanced GPU layer for white sweep effect */
+  will-change: left, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: strict;
+}
+
+.premium-button-navbar:hover {
+  background: linear-gradient(135deg, #7c8aea 0%, #8e5bbc 100%);
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  box-shadow: 
+    0 20px 40px -12px rgba(99, 102, 241, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.premium-button-navbar:active {
+  transform: translateY(0) scale(1) translateZ(0);
+  box-shadow: 0 10px 20px -8px rgba(99, 102, 241, 0.3);
+}
+
+/* Ensure text is always on top */
+.premium-button-navbar > * {
+  position: relative;
+  z-index: 2;
+}
+
 /* Line clamp utilities */
 .line-clamp-2 {
   display: -webkit-box;
@@ -369,6 +421,16 @@ textarea:focus {
     display: none; /* Disable shine effect on mobile for performance */
   }
   
+  /* OPTIMIZED: Better mobile navbar button performance */
+  .premium-button-navbar:hover {
+    transform: translateY(-1px) scale(1.01) translateZ(0);
+    box-shadow: 0 10px 25px -8px rgba(99, 102, 241, 0.3);
+  }
+  
+  .premium-button-navbar::before {
+    display: none; /* Disable white sweep effect on mobile for performance */
+  }
+  
   /* Ensure text is readable on small screens - removed text stroke that created white border */
   .gradient-text {
     /* Removed -webkit-text-stroke property to eliminate white border effect */
@@ -381,6 +443,7 @@ textarea:focus {
 /* PERFORMANCE: Optimize high-refresh rate displays */
 @media (min-resolution: 2dppx) {
   .premium-button,
+  .premium-button-navbar,
   .hover-glow,
   .gradient-text {
     /* Ensure crisp rendering on high-DPI displays */
@@ -396,6 +459,10 @@ textarea:focus {
   }
   
   .premium-button::before {
+    transition: none;
+  }
+  
+  .premium-button-navbar::before {
     transition: none;
   }
   

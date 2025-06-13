@@ -112,7 +112,7 @@ export function Navbar() {
               >
                 <Link
                   to="/contact"
-                  className="premium-button rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-sm font-medium text-white"
+                  className="premium-button-navbar rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-sm font-medium text-white"
                 >
                   Contact Me
                 </Link>
@@ -292,7 +292,7 @@ export function Navbar() {
                   <Link
                     to="/contact"
                     onClick={closeMenu}
-                    className="relative flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/25 group"
+                    className="premium-button-navbar relative flex items-center justify-center w-full px-6 py-4 text-white font-semibold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/25 group"
                   >
                     <span className="relative z-10 flex items-center">
                       Contact Me
@@ -304,9 +304,6 @@ export function Navbar() {
                         →
                       </motion.span>
                     </span>
-                    
-                    {/* Button glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/0 via-white/10 to-purple-400/0 group-hover:from-indigo-400/20 group-hover:via-white/20 group-hover:to-purple-400/20 transition-all duration-500" />
                   </Link>
                 </motion.div>
               </div>

@@ -5,7 +5,7 @@ import { Navbar, Footer, SEO } from '../components';
 // ---- Hero ----
 function Hero() {
   return (
-    <section className="relative flex min-h-[60vh] flex-col items-center justify-center px-4 sm:px-6 pt-24 sm:pt-32 lg:pt-40 pb-8 sm:pb-12 lg:pb-16 text-center text-white overflow-hidden">
+    <section className="relative flex min-h-[70vh] flex-col items-center justify-center px-4 sm:px-6 pt-24 sm:pt-32 lg:pt-40 pb-8 sm:pb-12 lg:pb-16 text-center text-white overflow-hidden">
       {/* Premium gradient background */}
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top,#15151d_0%,#0f0e17_50%,#0a0a12_100%)]" />
       

@@ -12,7 +12,7 @@ export function SEO({
   title, 
   description = "Kunal B - ML Engineer building AI products with sub-100ms latency. Shipped to 3M+ users.",
   keywords = ["ML Engineer", "AI Products", "FastAPI", "React", "TypeScript", "Bangalore"],
-  image = "/og-image.jpg",
+  image = "/og-image.svg",
   url = "https://kunalis.me"
 }: SEOProps) {
   useEffect(() => {
