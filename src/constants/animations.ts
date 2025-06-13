@@ -45,10 +45,10 @@ export const HOVER_LIFT = {
   transition: { duration: ANIMATION_DURATIONS.fast, ease: ANIMATION_EASINGS.easeOut }
 } as const;
 
-// Gradient animations
+// Gradient animations - Made mutable for framer-motion compatibility
 export const GRADIENT_TEXT_ANIMATION = {
   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-} as const;
+};
 
 export const GRADIENT_TEXT_TRANSITION = {
   duration: ANIMATION_DURATIONS.gradient, 
@@ -56,14 +56,14 @@ export const GRADIENT_TEXT_TRANSITION = {
   delay: ANIMATION_DELAYS.hero  // PERFORMANCE: Delay hero text animation
 } as const;
 
-// Glow animations  
+// Glow animations - Made mutable for framer-motion compatibility
 export const GLOW_ANIMATION = {
   boxShadow: [
     '0 0 60px rgba(99, 102, 241, 0.2), 0 0 120px rgba(99, 102, 241, 0.1)',
     '0 0 60px rgba(139, 69, 195, 0.2), 0 0 120px rgba(139, 69, 195, 0.1)',
     '0 0 60px rgba(99, 102, 241, 0.2), 0 0 120px rgba(99, 102, 241, 0.1)'
   ]
-} as const;
+};
 
 export const GLOW_TRANSITION = {
   duration: ANIMATION_DURATIONS.glow, 
@@ -72,14 +72,14 @@ export const GLOW_TRANSITION = {
   delay: ANIMATION_DELAYS.chat  // PERFORMANCE: Delay chat glow animation
 } as const;
 
-// Border animations
+// Border animations - Made mutable for framer-motion compatibility
 export const BORDER_ANIMATION = {
   boxShadow: [
     '0 0 0 1px rgba(99, 102, 241, 0.05), 0 0 30px rgba(99, 102, 241, 0.04)',
     '0 0 0 1px rgba(139, 69, 195, 0.05), 0 0 30px rgba(139, 69, 195, 0.04)',
     '0 0 0 1px rgba(99, 102, 241, 0.05), 0 0 30px rgba(99, 102, 241, 0.04)'
   ]
-} as const;
+};
 
 export const BORDER_TRANSITION = {
   duration: ANIMATION_DURATIONS.border, 

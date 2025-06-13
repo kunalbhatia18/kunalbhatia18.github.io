@@ -5,4 +5,3 @@ export { CustomCursor } from './ui/CustomCursor';
 export { PageTransition, PageLoader } from './ui/PageTransition';
 export { SEO } from './ui/SEO';
 export { ScrollProgress } from './ui/ScrollProgress';
-export { AnimatedSection, ParallaxText } from './ui/AnimatedSection';

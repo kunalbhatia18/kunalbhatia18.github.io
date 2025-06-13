@@ -6,6 +6,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
   
+  // Disable service worker registration
+  worker: {
+    format: 'es'
+  },
+  
   // Build optimizations
   build: {
     // Enable source maps for debugging (disable in production if needed)

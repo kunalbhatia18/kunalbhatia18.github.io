@@ -1,0 +1,227 @@
+// Premium Smooth Scrolling Utility
+// Provides iOS-like momentum scrolling with custom easing
+
+class SmoothScrolling {
+  private isScrolling = false;
+  private momentum = 0;
+  private lastScrollTime = 0;
+  private animationId: number | null = null;
+
+  constructor() {
+    this.init();
+  }
+
+  private init() {
+    // Only apply on desktop - mobile has native momentum scrolling
+    if (window.innerWidth > 768) {
+      this.setupSmoothScrolling();
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        this.setupSmoothScrolling();
+      } else {
+        this.cleanup();
+      }
+    });
+  }
+
+  private setupSmoothScrolling() {
+    // Enhanced wheel event handling for smooth scrolling
+    document.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
+    
+    // Smooth scrolling for anchor links
+    document.addEventListener('click', this.handleAnchorClick.bind(this));
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', this.handleKeydown.bind(this));
+  }
+
+  private handleWheel(e: WheelEvent) {
+    e.preventDefault();
+    
+    const now = Date.now();
+    const deltaTime = now - this.lastScrollTime;
+    this.lastScrollTime = now;
+    
+    // Calculate scroll speed based on wheel delta and timing
+    const scrollDelta = e.deltaY;
+    const speedMultiplier = Math.min(deltaTime / 16, 2); // Normalize to 60fps
+    
+    // Apply momentum-based scrolling
+    this.momentum = scrollDelta * speedMultiplier * 0.6; // Reduced for smoother feel
+    
+    if (!this.isScrolling) {
+      this.startSmoothScroll();
+    }
+  }
+
+  private startSmoothScroll() {
+    this.isScrolling = true;
+    this.animateScroll();
+  }
+
+  private animateScroll() {
+    if (Math.abs(this.momentum) < 0.1) {
+      this.isScrolling = false;
+      return;
+    }
+
+    // Apply easing to momentum
+    const currentScroll = window.pageYOffset;
+    
+    // Smooth easing function (ease-out)
+    const easedScroll = this.momentum * 0.8;
+    
+    window.scrollTo({
+      top: currentScroll + easedScroll,
+      behavior: 'auto' // We're handling the smoothing manually
+    });
+
+    // Reduce momentum (friction) - this creates the "ease" effect
+    this.momentum *= 0.88; // Higher value = longer momentum
+    
+    // Continue animation
+    this.animationId = requestAnimationFrame(() => this.animateScroll());
+  }
+
+  private handleAnchorClick(e: Event) {
+    const target = e.target as HTMLElement;
+    const link = target.closest('a[href^="#"]') as HTMLAnchorElement;
+    
+    if (link && link.hash) {
+      e.preventDefault();
+      this.scrollToElement(link.hash);
+    }
+  }
+
+  private scrollToElement(selector: string) {
+    const element = document.querySelector(selector);
+    if (!element) return;
+
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 100;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = Math.min(Math.abs(distance) / 2, 1200); // Slightly slower for smoothness
+
+    let startTime: number | null = null;
+
+    const animateScroll = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      // Custom easing function for premium feel
+      const easeProgress = this.easeInOutCubic(progress);
+      const currentPosition = startPosition + (distance * easeProgress);
+
+      window.scrollTo({
+        top: currentPosition,
+        behavior: 'auto'
+      });
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  }
+
+  private easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    const scrollKeys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'];
+    
+    if (scrollKeys.includes(e.key)) {
+      e.preventDefault();
+      
+      let scrollAmount = 0;
+      switch (e.key) {
+        case 'ArrowUp':
+          scrollAmount = -120; // Slightly more for better feel
+          break;
+        case 'ArrowDown':
+          scrollAmount = 120;
+          break;
+        case 'PageUp':
+          scrollAmount = -window.innerHeight * 0.85;
+          break;
+        case 'PageDown':
+          scrollAmount = window.innerHeight * 0.85;
+          break;
+        case 'Home':
+          this.scrollToPosition(0);
+          return;
+        case 'End':
+          this.scrollToPosition(document.body.scrollHeight);
+          return;
+      }
+
+      const currentScroll = window.pageYOffset;
+      const targetScroll = Math.max(0, Math.min(currentScroll + scrollAmount, document.body.scrollHeight - window.innerHeight));
+      
+      this.scrollToPosition(targetScroll);
+    }
+  }
+
+  private scrollToPosition(targetPosition: number) {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = Math.min(Math.abs(distance) / 3, 1000);
+
+    let startTime: number | null = null;
+
+    const animateScroll = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      const easeProgress = this.easeInOutCubic(progress);
+      const currentPosition = startPosition + (distance * easeProgress);
+
+      window.scrollTo({
+        top: currentPosition,
+        behavior: 'auto'
+      });
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  }
+
+  private cleanup() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    // Note: We need to store bound functions to properly remove them
+  }
+
+  // Public method to enable/disable smooth scrolling
+  public toggle(enabled: boolean) {
+    if (enabled) {
+      this.setupSmoothScrolling();
+    } else {
+      this.cleanup();
+    }
+  }
+}
+
+// Initialize smooth scrolling when DOM is loaded
+export const initSmoothScrolling = () => {
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    new SmoothScrolling();
+  }
+};
+
+// Export for manual initialization
+export { SmoothScrolling };

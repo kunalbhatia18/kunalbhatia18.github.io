@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { ScrollProgress, CustomCursor } from './components';
 import { PageLoader } from './components/ui/PageTransition';
-import { PerformanceMonitor, measureCoreWebVitals, addPerformanceHelpers } from './utils/performance';
+import { addPerformanceHelpers } from './utils/performance';
 import './index.css';
 
 // Lazy load pages for better bundle splitting
@@ -18,47 +18,73 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Show the beautiful loading screen for a coordinated time
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1900); // Optimized timing for seamless loader→content transition
+    // Make performance helpers available immediately
+    addPerformanceHelpers();
     
-    // PERFORMANCE: Initialize monitoring with zero blocking - schedule after transition
-    const initPerformanceAsync = () => {
-      // Use requestIdleCallback for truly non-blocking initialization
-      const scheduleWork = () => {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => {
-            const monitor = PerformanceMonitor.getInstance();
-            monitor.init();
-            measureCoreWebVitals();
-            addPerformanceHelpers();
-          }, { timeout: 5000 });
-        } else {
-          // Fallback for browsers without requestIdleCallback
-          setTimeout(() => {
-            const monitor = PerformanceMonitor.getInstance();
-            monitor.init();
-            measureCoreWebVitals();
-            addPerformanceHelpers();
-          }, 2500); // After transition completes
+    // Start FPS monitoring (only if not already started)
+    if (!(window as any).fpsStarted) {
+      let frameCount = 0;
+      let lastFrameTime = performance.now();
+      
+      const measureFPS = () => {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - lastFrameTime;
+        
+        if (deltaTime >= 3000) { // Log every 3 seconds
+          const fps = Math.round((frameCount * 1000) / deltaTime);
+          
+          // Color-coded console logging based on FPS
+          if (fps >= 55) {
+            console.log(`%c🟢 FPS: ${fps} (Excellent)`, 'color: #10b981; font-weight: bold;');
+          } else if (fps >= 45) {
+            console.log(`%c🟡 FPS: ${fps} (Good)`, 'color: #f59e0b; font-weight: bold;');
+          } else if (fps >= 30) {
+            console.log(`%c🟠 FPS: ${fps} (Fair)`, 'color: #f97316; font-weight: bold;');
+          } else {
+            console.log(`%c🔴 FPS: ${fps} (Poor)`, 'color: #ef4444; font-weight: bold;');
+          }
+          
+          frameCount = 0;
+          lastFrameTime = currentTime;
         }
+        
+        frameCount++;
+        requestAnimationFrame(measureFPS);
       };
       
-      // Schedule work for after loading completes
-      setTimeout(scheduleWork, 2000);
+      requestAnimationFrame(measureFPS);
+      (window as any).fpsStarted = true;
+    }
+  }, []);
+  
+  useEffect(() => {
+    // Fast, smart loading coordination
+    const minLoadTime = 600;
+    const maxLoadTime = 1200;
+    const startTime = performance.now();
+    
+    const checkReadiness = () => {
+      const elapsed = performance.now() - startTime;
+      if (elapsed >= minLoadTime) {
+        setLoading(false);
+      } else {
+        setTimeout(() => setLoading(false), minLoadTime - elapsed);
+      }
     };
     
-    // Start completely non-blocking performance monitoring
-    initPerformanceAsync();
+    const maxTimer = setTimeout(() => setLoading(false), maxLoadTime);
     
-    // Cleanup
-    return () => {
-      clearTimeout(timer);
-      // Cleanup will happen when component unmounts
-      const monitor = PerformanceMonitor.getInstance();
-      monitor.cleanup();
-    };
+    if (document.readyState === 'complete') {
+      checkReadiness();
+    } else {
+      const readyTimer = setTimeout(checkReadiness, 400);
+      return () => {
+        clearTimeout(maxTimer);
+        clearTimeout(readyTimer);
+      };
+    }
+    
+    return () => clearTimeout(maxTimer);
   }, []);
   
   // Scroll to top on route change

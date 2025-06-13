@@ -1,15 +1,11 @@
 import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { motion } from 'framer-motion';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatInput } from './ChatInput';
 import { 
   SCALE_IN, 
-  HOVER_LIFT, 
-  GLOW_ANIMATION, 
-  GLOW_TRANSITION, 
-  BORDER_ANIMATION, 
-  BORDER_TRANSITION,
   ANIMATION_DELAYS 
 } from '../../constants/animations';
 
@@ -19,22 +15,38 @@ interface Msg {
   content: string;
 }
 
-// OPTIMIZED: ChatWidget with performance improvements and cleaner separation
+// OPTIMIZED: Consolidated chat state for better performance
+interface ChatState {
+  msgs: Msg[];
+  inp: string;
+  loading: boolean;
+  isTyping: boolean;
+}
+
+// PERFORMANCE OPTIMIZED: ChatWidget with instant responses and consolidated state
 export const ChatWidget = memo(() => {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [inp, setInp] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // OPTIMIZATION: Single state object instead of 4 separate useState hooks
+  const [chatState, setChatState] = useState<ChatState>({
+    msgs: [],
+    inp: '',
+    loading: false,
+    isTyping: false
+  });
+
+  // Ref for stream interval cleanup
+  const streamIntervalRef = useRef<number | null>(null);
 
   // OPTIMIZED: Initialize with cleanup
   useEffect(() => { 
     const timer = setTimeout(() => {
-      setMsgs([{
-        id: 'intro',
-        role: 'assistant',
-        content: 'Hey! I\'m Kunal\'s AI assistant. Ask me anything about his technical expertise, achievements, or impressive projects! 🚀'
-      }]);
+      setChatState(prev => ({
+        ...prev,
+        msgs: [{
+          id: `intro-${Date.now()}`,
+          role: 'assistant',
+          content: 'Hey! I\'m Kunal\'s AI assistant. Ask me anything about his technical expertise, achievements, or impressive projects! 🚀'
+        }]
+      }));
     }, 500);
     
     return () => clearTimeout(timer);
@@ -42,7 +54,7 @@ export const ChatWidget = memo(() => {
 
   // OPTIMIZED: Stream function with proper cleanup - memoized
   const stream = useCallback((id: string, text: string) => {
-    setIsTyping(true);
+    setChatState(prev => ({ ...prev, isTyping: true }));
     let i = 0;
     
     // Clear any existing interval
@@ -52,15 +64,21 @@ export const ChatWidget = memo(() => {
     }
     
     streamIntervalRef.current = setInterval(() => {
-      setMsgs(prev => prev.map(m => m.id === id ? { ...m, content: text.slice(0, i) } : m));
+      setChatState(prev => ({
+        ...prev,
+        msgs: prev.msgs.map(m => m.id === id ? { ...m, content: text.slice(0, i) } : m)
+      }));
       i += 3;
       if (i >= text.length) { 
         if (streamIntervalRef.current) {
           clearInterval(streamIntervalRef.current);
           streamIntervalRef.current = null;
         }
-        setLoading(false);
-        setIsTyping(false);
+        setChatState(prev => ({
+          ...prev,
+          loading: false,
+          isTyping: false
+        }));
       }
     }, 20);
   }, []);
@@ -113,35 +131,55 @@ export const ChatWidget = memo(() => {
     return 'Kunal has 4+ years shipping production ML at scale. He\'s optimized inference latency by 10×, served 3M+ users, and built voice-first AI that processes 60 emails/minute. His technical approach focuses on shipping fast and scaling systems efficiently!';
   }, []);
 
+  // Helper function for mobile-safe UUID generation
+  const generateId = () => {
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   const ask = useCallback((q: string) => {
-    if (!q.trim()) return;
+    const trimmedQ = q.trim();
+    if (!trimmedQ) return;
     
-    const user: Msg = { id: crypto.randomUUID(), role: 'user', content: q };
-    const botId = crypto.randomUUID();
-    setMsgs(prev => [...prev, user, { id: botId, role: 'assistant', content: '' }]);
-    setInp(''); 
-    setLoading(true);
+    // Generate IDs first
+    const userId = generateId();
+    const botId = generateId();
     
-    const response = getResponse(q);
-    setTimeout(() => stream(botId, response), 500);
+    // Create message objects
+    const userMsg: Msg = { id: userId, role: 'user', content: trimmedQ };
+    const botMsg: Msg = { id: botId, role: 'assistant', content: '' };
+    
+    // Use flushSync to force synchronous state updates on mobile Safari
+    flushSync(() => {
+      setChatState(prev => ({
+        ...prev,
+        msgs: [...prev.msgs, userMsg, botMsg],
+        inp: '',
+        loading: true
+      }));
+    });
+    
+    const response = getResponse(trimmedQ);
+    
+    // Delay stream start to ensure DOM has updated
+    setTimeout(() => {
+      stream(botId, response);
+    }, 100);
   }, [getResponse, stream]);
 
-  // OPTIMIZED: Memoized chat window styles with performance improvements
+  // BLACKISH: Dark gradient with subtle variation
   const chatWindowStyle = useMemo(() => ({
     background: `
       linear-gradient(135deg, 
-        rgba(15, 15, 35, 0.85) 0%, 
-        rgba(10, 10, 25, 0.92) 50%,
-        rgba(5, 5, 15, 0.96) 100%
-      ),
-      radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 60%),
-      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%)
+        rgba(16, 16, 28, 0.96) 0%, 
+        rgba(12, 12, 22, 0.97) 50%,
+        rgba(8, 8, 16, 0.98) 100%
+      )
     `,
-    backdropFilter: 'blur(20px) saturate(1.5)', // Original beautiful blur
+    // Enhanced styling for better visual appeal
     boxShadow: `
-      0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 20px 40px -10px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.06)
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 25px 50px -12px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1)
     `,
     height: 'clamp(500px, 70vh, 700px)',
     minHeight: '500px',
@@ -151,54 +189,51 @@ export const ChatWidget = memo(() => {
     willChange: 'transform'
   }), []);
 
-  // OPTIMIZED: Memoized animation props using shared constants with staggered delay
+  // ORIGINAL: Memoized animation props without hover lift
   const mainAnimation = useMemo(() => ({
     ...SCALE_IN,
-    whileHover: HOVER_LIFT,
     transition: { 
       duration: 0.8, 
       ease: "easeOut",
-      delay: ANIMATION_DELAYS.chat  // Chat widget starts after hero
+      delay: ANIMATION_DELAYS.chat
     }
   }), []);
 
   return (
     <div className="relative">
-      {/* OPTIMIZED: Simplified spotlight effect with GPU optimization */}
-      <div className="absolute -inset-4 sm:-inset-8 bg-gradient-to-r from-indigo-500/8 via-purple-500/8 to-pink-500/8 blur-[30px] sm:blur-[40px] opacity-60 gpu-background" />
-
-      {/* OPTIMIZED: Simplified outer glow with GPU optimization */}
-      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl">
-        <motion.div 
-          className="absolute inset-0 rounded-2xl sm:rounded-3xl gpu-animated"
-          animate={GLOW_ANIMATION}
-          transition={GLOW_TRANSITION}
-        />
-      </div>
+      {/* ANIMATED: Chat widget glow */}
+      <motion.div 
+        className="absolute inset-0 rounded-2xl sm:rounded-3xl"
+        animate={{
+          boxShadow: [
+            '0 0 60px rgba(99, 102, 241, 0.4), 0 0 120px rgba(99, 102, 241, 0.2)',
+            '0 0 60px rgba(139, 69, 195, 0.4), 0 0 120px rgba(139, 69, 195, 0.2)',
+            '0 0 60px rgba(99, 102, 241, 0.4), 0 0 120px rgba(99, 102, 241, 0.2)'
+          ]
+        }}
+        transition={{ 
+          duration: 4, 
+          repeat: Infinity, 
+          ease: "easeInOut"
+        }}
+      />
 
       <motion.div 
         {...mainAnimation}
         id="chat" 
-        className="relative flex flex-col rounded-2xl sm:rounded-3xl backdrop-blur-2xl shadow-2xl overflow-hidden group glass"
+        className="relative flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden group glass"
         style={chatWindowStyle}
       >
-        {/* OPTIMIZED: Simplified animated border with GPU optimization */}
-        <motion.div 
-          className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none gpu-animated"
-          animate={BORDER_ANIMATION}
-          transition={BORDER_TRANSITION}
-        />
-        
         {/* Content */}
         <div className="flex flex-col h-full">
           <ChatHeader />
-          <ChatMessages messages={msgs} isTyping={isTyping} />
+          <ChatMessages messages={chatState.msgs} isTyping={chatState.isTyping} />
           <ChatInput 
-            input={inp}
-            onInputChange={setInp}
+            input={chatState.inp}
+            onInputChange={(value: string) => setChatState(prev => ({ ...prev, inp: value }))}
             onSubmit={ask}
-            loading={loading}
-            showSuggestions={msgs.length <= 1}
+            loading={chatState.loading}
+            showSuggestions={chatState.msgs.length <= 1}
           />
         </div>
       </motion.div>

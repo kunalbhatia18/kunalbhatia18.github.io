@@ -3,13 +3,17 @@ import { motion } from 'framer-motion';
 import { 
   FADE_IN_UP_LARGE, 
   FADE_IN_UP, 
-  GRADIENT_TEXT_ANIMATION, 
   GRADIENT_TEXT_TRANSITION,
   ANIMATION_DURATIONS,
   ANIMATION_DELAYS 
 } from '../../constants/animations';
 
 export function HeroSection() {
+  // OPTIMIZED: Memoized gradient text animation
+  const gradientTextAnimation = useMemo(() => ({
+    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+  }), []);
+
   // OPTIMIZED: Memoized gradient text animation style
   const gradientTextStyle = useMemo(() => ({
     backgroundSize: '200% 200%'
@@ -32,17 +36,18 @@ export function HeroSection() {
   }), []);
 
   return (
-    <section className="mx-auto max-w-4xl text-center pt-24 sm:pt-32 lg:pt-40 px-4 sm:px-6">
+    <section className="relative mx-auto max-w-4xl text-center pt-24 sm:pt-32 lg:pt-40 px-4 sm:px-6">
       <motion.div 
         {...FADE_IN_UP_LARGE}
         transition={mainTransition}
+        className="relative z-10"
       >
         <h1 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-6 sm:mb-8 overflow-visible">
           I build AI products that feel like{' '}
           <span className="block sm:inline">
             <motion.span 
               className="gradient-text inline-block"
-              animate={GRADIENT_TEXT_ANIMATION}
+              animate={gradientTextAnimation}
               transition={GRADIENT_TEXT_TRANSITION}
               style={gradientTextStyle}
             >

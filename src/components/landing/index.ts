@@ -5,4 +5,3 @@ export { ChatMessages } from './ChatMessages';
 export { ChatInput } from './ChatInput';
 export { CallToAction } from './CallToAction';
 export { MetricCards } from './MetricCards';
-export { BackgroundLayers } from './BackgroundLayers';

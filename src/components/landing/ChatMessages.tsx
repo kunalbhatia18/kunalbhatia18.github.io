@@ -14,18 +14,18 @@ interface ChatMessagesProps {
 
 // OPTIMIZED: Memoized individual message component
 const MessageItem = memo(({ message }: { message: Msg }) => {
-  // OPTIMIZED: Memoized message styles
+  // OPTIMIZED: Memoized message styles - backdrop filters removed for performance
   const messageStyle = useMemo(() => ({
     background: message.role === 'user'
       ? `linear-gradient(135deg, 
-          rgba(99, 102, 241, 0.95) 0%, 
-          rgba(79, 70, 229, 0.95) 100%
+          rgba(99, 102, 241, 0.80) 0%, 
+          rgba(139, 92, 246, 0.80) 100%
         )`
       : `linear-gradient(135deg, 
           rgba(255, 255, 255, 0.12) 0%, 
           rgba(255, 255, 255, 0.08) 100%
         )`,
-    backdropFilter: message.role === 'assistant' ? 'blur(6px)' : 'blur(2px)',
+    // backdropFilter removed for performance - was causing FPS drops
     border: message.role === 'assistant' 
       ? '1px solid rgba(255, 255, 255, 0.15)' 
       : '1px solid rgba(255, 255, 255, 0.1)',

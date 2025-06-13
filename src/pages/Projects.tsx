@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navbar, Footer } from '../components';
+import { Navbar, Footer, SEO } from '../components';
 
 // ───────────────────────── Data ─────────────────────────
 const projects = [
@@ -312,7 +312,15 @@ export default function Projects() {
   }, []);
   
   return (
-    <main className="relative bg-[#0f0e17] font-inter text-white min-h-screen">
+    <>
+      <SEO 
+        title="Projects - Kunal's Portfolio"
+        description="Explore Kunal's portfolio: Project Quicksilver (35ms inference), Voice Gmail Copilot (60 emails/min), Swanari Dashboard (3M+ users). AI, ML, and full-stack projects."
+        keywords={['Project Quicksilver', 'Voice Gmail Copilot', 'AI Projects', 'ML Portfolio', 'FastAPI Projects', 'React Projects', '35ms inference', 'Voice AI']}
+        url="https://kunalis.me/projects"
+        image="https://kunalis.me/proj1.jpg"
+      />
+      <main className="relative bg-[#0f0e17] font-inter text-white min-h-screen">
       {/* Animated gradient background */}
       <motion.div 
         className="pointer-events-none fixed inset-0 -z-20"
@@ -354,5 +362,6 @@ export default function Projects() {
       <Modal proj={open} onClose={() => setOpen(null)} />
       <Footer />
     </main>
+    </>
   );
 }

@@ -37,7 +37,7 @@ export function Footer() {
         <div className="sm:col-span-2 md:col-span-1">
           <h3 className="font-semibold text-white mb-2 sm:mb-3 text-sm sm:text-base">Status</h3>
           <div className="flex items-center gap-2 text-xs sm:text-sm text-white/60">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
             <span>{randomStatus}</span>
           </div>
           <p className="text-xs sm:text-sm text-white/40 mt-1 sm:mt-2">

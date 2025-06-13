@@ -11,10 +11,17 @@ html {
 body {
   background-color: #0a0a12;
   overscroll-behavior: none;
-  /* PERFORMANCE: Enable hardware acceleration without breaking fixed positioning */
-  /* Removed transform: translateZ(0) as it breaks fixed positioning */
+  /* SIMPLE: Basic smooth scrolling without breaking functionality */
+  -webkit-overflow-scrolling: touch;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced scrolling for webkit browsers */
+@supports (-webkit-overflow-scrolling: touch) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Fix overscroll color on all elements */
@@ -27,28 +34,47 @@ html, body {
   transform: none !important;
 }
 
-/* OPTIMIZED: Advanced GPU layer management */
+/* OPTIMIZED: Smart GPU layer management - reduced during initial load */
 .gpu-layer {
-  will-change: transform;
+  /* Reduced GPU allocation during initial load */
+  will-change: auto;
   transform: translateZ(0);
   backface-visibility: hidden;
   isolation: isolate;
 }
 
+/* Activate GPU layers after loading */
+.gpu-layer.loaded {
+  will-change: transform;
+  contain: layout style;
+}
+
 /* PERFORMANCE: Smart GPU layer for animations */
 .gpu-animated {
-  will-change: transform, opacity;
+  /* Reduced GPU allocation during initial load */
+  will-change: auto;
   transform: translateZ(0);
   backface-visibility: hidden;
   isolation: isolate;
+}
+
+/* Activate GPU layers after loading */
+.gpu-animated.loaded {
+  will-change: transform, opacity;
   contain: layout style;
 }
 
 /* PERFORMANCE: GPU layer for background elements */
 .gpu-background {
-  will-change: background-position, filter;
+  /* Reduced GPU allocation during initial load */
+  will-change: auto;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* Activate GPU layers after loading */
+.gpu-background.loaded {
+  will-change: background-position, filter;
   contain: paint;
 }
 
@@ -86,14 +112,13 @@ html, body {
 .card-spacing { @apply p-8; }
 .button-spacing { @apply px-8 py-3; }
 
-/* OPTIMIZED: Enhanced Glass Effects with GPU optimization */
+/* OPTIMIZED: Enhanced Glass Effects with GPU optimization - backdrop filters removed */
 .glass {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* backdrop-filter removed for performance */
   border: 1px solid rgba(255, 255, 255, 0.08);
   /* PERFORMANCE: Advanced GPU layer management */
-  will-change: backdrop-filter, transform;
+  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
   isolation: isolate;
@@ -102,11 +127,10 @@ html, body {
 
 .glass-dark {
   background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* backdrop-filter removed for performance */
   border: 1px solid rgba(255, 255, 255, 0.05);
   /* PERFORMANCE: Advanced GPU layer management */
-  will-change: backdrop-filter, transform;
+  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
   isolation: isolate;
@@ -185,7 +209,7 @@ html, body {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   z-index: 1;
   /* PERFORMANCE: Advanced GPU layer for shine effect */
@@ -350,16 +374,8 @@ textarea:focus {
     /* Removed -webkit-text-stroke property to eliminate white border effect */
   }
   
-  /* OPTIMIZED: Reduce backdrop filters on mobile for performance */
-  .glass {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  
-  .glass-dark {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
+  /* OPTIMIZED: Glass effects already optimized - backdrop filters removed entirely */
+  /* .glass and .glass-dark no longer use backdrop filters */
 }
 
 /* PERFORMANCE: Optimize high-refresh rate displays */

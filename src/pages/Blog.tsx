@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navbar, Footer } from '../components';
+import { Navbar, Footer, SEO } from '../components';
 
 /*************************** Sample posts ***************************/
 const posts = [
@@ -242,7 +242,15 @@ export default function BlogIndex() {
   );
   
   return (
-    <main className="relative min-h-screen bg-[#0f0e17] font-inter text-white">
+    <>
+      <SEO 
+        title="Blog - Kunal's Build Logs & Engineering Insights"
+        description="Engineering insights from the trenches. Sub-100ms latency tricks, LLM caching strategies, FAISS optimization, voice AI pipelines. Real experiences from shipping at scale."
+        keywords={['Engineering Blog', 'Sub-100ms latency', 'LLM caching', 'FAISS optimization', 'Voice AI', 'ML Engineering', 'FastAPI tips', 'AI Performance']}
+        url="https://kunalis.me/blog"
+        image="https://kunalis.me/blog1.jpg"
+      />
+      <main className="relative min-h-screen bg-[#0f0e17] font-inter text-white">
       {/* Animated gradient background */}
       <motion.div 
         className="pointer-events-none fixed inset-0 -z-20"
@@ -290,5 +298,6 @@ export default function BlogIndex() {
       
       <Footer />
     </main>
+    </>
   );
 }

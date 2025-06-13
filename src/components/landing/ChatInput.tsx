@@ -16,49 +16,6 @@ interface ChatInputProps {
   showSuggestions: boolean;
 }
 
-// OPTIMIZED: Memoized suggestion button component
-const SuggestionButton = memo(({ suggestion, index, onSuggestionClick }: {
-  suggestion: string;
-  index: number;
-  onSuggestionClick: (suggestion: string) => void;
-}) => {
-  const handleClick = useCallback(() => {
-    onSuggestionClick(suggestion);
-  }, [suggestion, onSuggestionClick]);
-
-  const buttonStyle = useMemo(() => ({
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
-    backdropFilter: 'blur(6px)',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-    fontWeight: '500',
-    letterSpacing: '0.01em'
-  }), []);
-
-  const animation = useMemo(() => ({
-    initial: { opacity: 0, x: 20 },
-    animate: { opacity: 1, x: 0 },
-    transition: { delay: index * 0.1 }
-  }), [index]);
-
-  return (
-    <motion.button 
-      key={suggestion}
-      {...animation}
-      onClick={handleClick}
-      whileHover={{ scale: 1.02, y: -1 }}
-      whileTap={{ scale: 0.98 }}
-      className="relative whitespace-nowrap rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-white/75 transition-all duration-200 group overflow-hidden shrink-0 hover:text-white"
-      style={buttonStyle}
-    >
-      <span className="relative z-10">{suggestion}</span>
-      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/15 to-purple-500/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-    </motion.button>
-  );
-});
-
-SuggestionButton.displayName = 'SuggestionButton';
-
 export const ChatInput = memo(({ 
   input, 
   onInputChange, 
@@ -67,7 +24,7 @@ export const ChatInput = memo(({
   showSuggestions
 }: ChatInputProps) => {
   
-  // OPTIMIZED: Memoized input area style
+  // OPTIMIZED: Memoized input area style - backdrop filter removed for performance
   const inputAreaStyle = useMemo(() => ({
     background: `
       linear-gradient(to top, 
@@ -75,27 +32,29 @@ export const ChatInput = memo(({
         rgba(0, 0, 0, 0.15) 100%
       )
     `,
-    backdropFilter: 'blur(4px)', // Original blur
-    contain: 'layout style' // CSS containment
+    // backdropFilter removed for performance
+    contain: 'layout style'
   }), []);
 
-  // OPTIMIZED: Memoized form handler
+  // Form submit handler
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    onSubmit(input);
-  }, [onSubmit, input]);
+    if (input.trim() && !loading) {
+      onSubmit(input);
+    }
+  }, [input, loading, onSubmit]);
 
+  // Input change handler
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onInputChange(e.target.value);
   }, [onInputChange]);
 
-  // OPTIMIZED: Memoized suggestion handler
+  // Suggestion click handler
   const handleSuggestionClick = useCallback((suggestion: string) => {
     onSubmit(suggestion);
   }, [onSubmit]);
 
-  // OPTIMIZED: Memoized form styles
+  // OPTIMIZED: Memoized form styles - backdrop filter removed for performance
   const formStyle = useMemo(() => ({
     background: `
       linear-gradient(135deg, 
@@ -103,14 +62,16 @@ export const ChatInput = memo(({
         rgba(255, 255, 255, 0.02) 100%
       )
     `,
-    backdropFilter: 'blur(6px)', // Original blur
+    // backdropFilter removed for performance
     boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.2)'
   }), []);
 
   const inputStyle = useMemo(() => ({
     fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     letterSpacing: '0.01em',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
+    WebkitAppearance: 'none' as const,
+    fontSize: '14px' // Smaller font size for better mobile experience
   }), []);
 
   const buttonStyle = useMemo(() => ({
@@ -123,7 +84,17 @@ export const ChatInput = memo(({
     boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     fontWeight: '600',
-    letterSpacing: '0.025em'
+    letterSpacing: '0.025em',
+    WebkitTapHighlightColor: 'transparent'
+  }), []);
+
+  const suggestionButtonStyle = useMemo(() => ({
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
+    // backdropFilter removed for performance
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    fontWeight: '500',
+    letterSpacing: '0.01em',
+    WebkitTapHighlightColor: 'transparent'
   }), []);
 
   // OPTIMIZED: Memoized suggestions animation
@@ -146,19 +117,27 @@ export const ChatInput = memo(({
             className="mb-4 sm:mb-5"
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-pulse" />
+              <div className="w-1 h-1 bg-indigo-400 rounded-full" />
               <span className="text-xs text-white/50 font-medium tracking-wide">Quick start suggestions:</span>
               <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
             </div>
             <div className="relative">
               <div className="flex gap-2 overflow-x-auto pb-2 suggestions-scroll" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {SUGGESTIONS.map((suggestion, index) => (
-                  <SuggestionButton 
+                  <motion.button
                     key={suggestion}
-                    suggestion={suggestion}
-                    index={index}
-                    onSuggestionClick={handleSuggestionClick}
-                  />
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    type="button"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="relative whitespace-nowrap rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-white/75 transition-all duration-200 group overflow-hidden shrink-0 hover:text-white hover:scale-105 active:scale-95"
+                    style={suggestionButtonStyle}
+                  >
+                    <span className="relative z-10">{suggestion}</span>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/15 to-purple-500/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                  </motion.button>
                 ))}
               </div>
               {/* Fade out gradient */}
@@ -183,49 +162,20 @@ export const ChatInput = memo(({
           autoComplete="off"
           tabIndex={0}
         />
-        <motion.button 
+        <button 
+          type="submit"
           disabled={loading} 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative premium-button rounded-lg sm:rounded-xl px-5 py-2.5 sm:px-6 lg:px-8 sm:py-3 text-sm sm:text-base font-semibold disabled:opacity-50 shrink-0 overflow-hidden transition-all duration-200"
+          className="relative rounded-lg sm:rounded-xl p-2.5 sm:p-3 disabled:opacity-50 shrink-0 flex items-center justify-center"
           style={buttonStyle}
         >
-          <span className="relative z-10 flex items-center gap-2">
-            {loading ? (
-              <>
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                />
-                Thinking...
-              </>
-            ) : (
-              <>
-                Send
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
-              </>
-            )}
-          </span>
-          {/* Button shine effect */}
-          <motion.div 
-            className="absolute inset-0 pointer-events-none"
-            animate={{
-              x: ['-100%', '200%']
-            }}
-            transition={{ 
-              duration: 3, 
-              repeat: Infinity,
-              repeatDelay: 3
-            }}
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
-              transform: 'skewX(-20deg)'
-            }}
-          />
-        </motion.button>
+          {loading ? (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          )}
+        </button>
       </form>
     </div>
   );

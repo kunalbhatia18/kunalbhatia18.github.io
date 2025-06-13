@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Navbar, Footer } from '../components';
+import { Navbar, Footer, SEO } from '../components';
 
 // ───────────────────────── Hero ─────────────────────────
 function Hero() {
@@ -58,7 +58,7 @@ function ContactCard() {
 
   const socials = [
     { name: 'Email', icon: '✉️', link: 'mailto:kunal@kunalis.me', handle: 'kunal@kunalis.me' },
-    { name: 'GitHub', icon: '💻', link: 'https://github.com/kunalb', handle: 'github.com/kunalb' },
+    { name: 'GitHub', icon: '💻', link: 'https://github.com/kunalbhatia18', handle: 'github.com/kunalbhatia18' },
     { name: 'Twitter', icon: '🐦', link: 'https://twitter.com/kunal_b', handle: '@kunal_b' },
     { name: 'LinkedIn', icon: '💼', link: 'https://linkedin.com/in/kunalb', handle: 'in/kunalb' }
   ];
@@ -299,7 +299,15 @@ export default function Contact() {
   }, []);
   
   return (
-    <main className="relative min-h-screen bg-[#0f0e17] font-inter text-white">
+    <>
+      <SEO 
+        title="Contact Kunal - Let's Build Something Amazing"
+        description="Ready to discuss your next project? Contact Kunal Bhatia - AI/ML Engineer. Fast response guaranteed. Email: kunal@kunalis.me. Available for freelance and full-time opportunities."
+        keywords={['Contact Kunal Bhatia', 'Hire ML Engineer', 'AI Engineer Contact', 'Freelance ML Developer', 'kunal@kunalis.me', 'Bangalore AI Engineer', 'ML Consultant']}
+        url="https://kunalis.me/contact"
+        image="https://kunalis.me/profile-purple.jpg"
+      />
+      <main className="relative min-h-screen bg-[#0f0e17] font-inter text-white">
       {/* Animated gradient background */}
       <motion.div 
         className="pointer-events-none fixed inset-0 -z-20"
@@ -312,5 +320,6 @@ export default function Contact() {
       <Stats />
       <Footer />
     </main>
+    </>
   );
 }
