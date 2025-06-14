@@ -5,7 +5,7 @@ const SUGGESTIONS = [
   'What\'s Kunal\'s ML expertise?',
   'Tell me about latency optimizations',
   'Show me technical achievements',
-  'Try typing "coffee" or "konami" 😉',
+  'Try typing "coffee" ☕',
 ] as const;
 
 interface ChatInputProps {

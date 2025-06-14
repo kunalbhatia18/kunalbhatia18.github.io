@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatInput } from './ChatInput';
+import { chatAPI } from '../../utils/chatAPI';
 import { 
   SCALE_IN, 
   ANIMATION_DELAYS 
@@ -92,51 +93,30 @@ export const ChatWidget = memo(() => {
     };
   }, []);
 
-  // OPTIMIZED: Memoized response logic
-  const getResponse = useCallback((q: string) => {
-    const query = q.toLowerCase();
-    
-    if (query.includes('experience') || query.includes('ml') || query.includes('expertise')) {
-      return 'Kunal brings 4+ years of production ML engineering expertise. He\'s architected everything from 35ms inference gateways to real-time fraud detection pipelines. Led technical teams at startups and shipped systems serving millions. Deep understanding of both technical challenges and rapid iteration needed in high-growth environments!';
-    } else if (query.includes('latency') || query.includes('optimization')) {
-      return 'His technical masterpiece: 35ms end-to-end inference for a 500-token completion! Achieved through aggressive caching strategies, ONNX optimization, and edge deployment architecture. He\'s obsessed with performance optimization and has documented techniques for shaving critical milliseconds from ML systems! 🚀';
-    } else if (query.includes('project') || query.includes('achievement')) {
-      return 'Technical highlights: (1) Voice Gmail Copilot - 60 emails/min processing with natural speech recognition, (2) Project Quicksilver - 35ms inference serving 10M+ requests daily, (3) Swanari Dashboard - real-time data visualization for 3M+ users across 180 countries. All production-grade, all optimized for scale!';
-    } else if (query.includes('impressive') || query.includes('work')) {
-      return 'What sets Kunal apart: he ships production systems that scale. Technical achievements include 80% cost reduction through optimization, 10× throughput improvements, and systems serving millions of users. Plus he\'s a fascinating person - marathoner, rock vocalist, and makes incredible Italian food! 🎸🏃‍♂️🍝';
-    } else if (query.includes('fun') || query.includes('hobby')) {
-      return 'When not optimizing ML systems, Kunal\'s a lead vocalist in a rock band, runs sub-4hr marathons, and treks the Himalayas! Also an excellent cook specializing in Italian cuisine. He brings the same precision and passion to everything - whether it\'s debugging production systems or perfecting pasta sauce! 🎸🏃‍♂️';
-    } else if (query.includes('coffee') || query.includes('caffeine')) {
-      return 'Fun fact: Kunal\'s code quality is directly proportional to his coffee intake! ☕ He\'s powered by espresso and has been known to debug complex ML pipelines at 2 AM with nothing but a double shot and sheer determination. Pro tip: Never schedule meetings before his morning coffee! 😄';
-    } else if (query.includes('pizza') || query.includes('food')) {
-      return 'Plot twist: Kunal makes better pasta than most Italian restaurants! 🍝 He approaches cooking like he approaches ML - precise measurements, perfect timing, and lots of experimentation. His carbonara has been known to make people forget about production bugs entirely!';
-    } else if (query.includes('bug') || query.includes('debug')) {
-      return 'Kunal\'s debugging superpower: he talks to bugs like they\'re old friends. "Hey there, little race condition, what are you doing here?" 🐛 His rubber duck collection has seen some serious therapy sessions. Current record: 73 hours debugging a single character typo (we don\'t talk about that one).';
-    } else if (query.includes('ai') || query.includes('robot')) {
-      return 'Kunal builds AI so good, even other AIs are impressed! 🤖 This chat bot you\'re talking to? Totally built by him. It\'s basically having a conversation with his digital twin, minus the coffee addiction and pasta obsession.';
-    } else if (query.includes('secret') || query.includes('easter egg')) {
-      return 'Shhh! 🤫 You found a secret! Kunal hides easter eggs in all his code. Legend says there\'s a hidden Rick Roll somewhere in his ML pipeline. Try typing "konami" or "dance" for more surprises! (But don\'t tell anyone I told you)';
-    } else if (query.includes('konami') || query.includes('↑↑↓↓←→←→')) {
-      return '🎮 KONAMI CODE ACTIVATED! 🎮 You\'ve unlocked the secret developer mode! Kunal\'s childhood dream was to program video games, and he still adds cheat codes to everything he builds. You just earned 30 extra lives and infinite coffee! ☕✨';
-    } else if (query.includes('dance') || query.includes('🕺')) {
-      return '🕺💃 Dance party initiated! 💃🕺 Kunal\'s secret productivity hack: he codes to music and occasionally breaks into spontaneous dance during compile time. His teammates have learned to just roll with it. Current favorite coding playlist: 80s rock mixed with lo-fi beats!';
-    } else if (query.includes('meme') || query.includes('funny')) {
-      return 'Kunal\'s sense of humor is like his code - well-structured with perfect timing! 😂 He\'s been known to name variables things like "thisVariableIsDefinitelyNotABug" and leaves comments like "// If this breaks, I was never here". His git commits are legendary!';
-    } else if (query.includes('cat') || query.includes('dog')) {
-      return 'Kunal is definitely a dog person! 🐕 He believes dogs are like good code - loyal, reliable, and they always come when you call them (unlike APIs sometimes). Fun fact: he names his ML models after dog breeds. Project "Golden Retriever" had the best fetch accuracy!';
-    } else if (query.includes('weather') || query.includes('rain')) {
-      return 'Kunal\'s productivity is inversely proportional to how nice the weather is! ☀️ Perfect sunny day? Time to go hiking. Rainy day? Perfect for coding marathons with hot coffee. Bangalore weather is basically designed for developers!';
-    }
-    
-    return 'Kunal has 4+ years shipping production ML at scale. He\'s optimized inference latency by 10×, served 3M+ users, and built voice-first AI that processes 60 emails/minute. His technical approach focuses on shipping fast and scaling systems efficiently!';
-  }, []);
-
   // Helper function for mobile-safe UUID generation
   const generateId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const ask = useCallback((q: string) => {
+  // OPTIMIZED: Prewritten responses for template questions only
+  const getPrewrittenResponse = useCallback((message: string): string | null => {
+    // Template questions (exact matches)
+    if (message === "What's Kunal's ML expertise?") {
+      return 'Kunal brings 4+ years of production ML engineering expertise, specializing in sub-100ms latency optimization! He\'s architected systems like Project Quicksilver (35ms inference), fraud detection pipelines with 10× throughput improvements, and real-time systems serving 10M+ requests daily. His technical stack spans GPT-4, FAISS, FastAPI, React, and cloud platforms. From ideation to deployment, he builds ML systems that actually scale! 🚀';
+    }
+    
+    if (message === "Tell me about latency optimizations") {
+      return 'Kunal\'s obsessed with speed! His masterpiece: Project Quicksilver with 35ms end-to-end inference for 500-token completions. He\'s achieved this through aggressive Redis caching, ONNX optimization, edge deployment architecture, and FastAPI async patterns. Other achievements include 10× throughput improvements in fraud detection and sub-100ms response systems. He lives by the motto: "Every millisecond matters!" ⚡';
+    }
+    
+    if (message === "Show me technical achievements") {
+      return 'Here are Kunal\'s standout technical wins: 🏆 Project Quicksilver (35ms inference serving 10M+ requests), 🏆 Swanari Dashboard (3M+ users across 180+ countries), 🏆 Voice Gmail Copilot (60 emails/min processing), 🏆 Fraud Detection Pipeline (10× throughput boost), 🏆 TrueUPI (UPI fraud prevention). Each project solved real problems at scale with measurable impact. Production-grade, optimized, and built to last! 💪';
+    }
+    
+    return null; // No prewritten response, use API (including coffee)
+  }, []);
+
+  const ask = useCallback(async (q: string) => {
     const trimmedQ = q.trim();
     if (!trimmedQ) return;
     
@@ -158,13 +138,50 @@ export const ChatWidget = memo(() => {
       }));
     });
     
-    const response = getResponse(trimmedQ);
+    // Check for prewritten responses first
+    const prewrittenResponse = getPrewrittenResponse(trimmedQ);
     
-    // Delay stream start to ensure DOM has updated
-    setTimeout(() => {
-      stream(botId, response);
-    }, 100);
-  }, [getResponse, stream]);
+    if (prewrittenResponse) {
+      // Use prewritten response (no API call)
+      setTimeout(() => {
+        stream(botId, prewrittenResponse);
+      }, 100);
+    } else {
+      // Call the real API for all other questions (including coffee)
+      try {
+        const apiResponse = await chatAPI.sendMessage(trimmedQ);
+        
+        setTimeout(() => {
+          stream(botId, apiResponse.response);
+        }, 100);
+      } catch (error) {
+        // Handle API errors gracefully with user-friendly messages
+        let errorMessage = 'Sorry, I\'m having trouble responding right now. Please try again in a moment.';
+        
+        if (error instanceof Error) {
+          if (error.message.includes('Unable to connect')) {
+            errorMessage = '🔌 I\'m having trouble connecting right now. Please check your internet connection and try again!';
+          } else if (error.message.includes('Daily request limit')) {
+            errorMessage = '⏰ I\'ve reached my daily chat limit (500 requests)! I\'ll be back tomorrow with fresh energy. Thanks for understanding!';
+          } else if (error.message.includes('Hourly request limit')) {
+            errorMessage = '⏰ I\'ve reached my hourly chat limit (100 requests)! Please try again in the next hour. Thanks for your patience!';
+          } else if (error.message.includes('Message too long')) {
+            errorMessage = '📝 That message is a bit too long! Could you try shortening it to under 500 characters?';
+          } else if (error.message.includes('HTTP 429')) {
+            errorMessage = '⏰ I\'m getting a lot of requests right now! Please wait a moment and try again.';
+          } else if (error.message.includes('timeout')) {
+            errorMessage = '⏱️ That took longer than expected. Let me try again - please resend your message!';
+          } else {
+            errorMessage = '🤖 Something unexpected happened on my end. Please try asking your question again!';
+          }
+        }
+        
+        setTimeout(() => {
+          stream(botId, errorMessage);
+        }, 100);
+      }
+    }
+  }, [stream, getPrewrittenResponse]);
 
   // BLACKISH: Dark gradient with subtle variation
   const chatWindowStyle = useMemo(() => ({
