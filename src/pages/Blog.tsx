@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar, Footer, SEO } from '../components';
+import { getAssetUrl, IMAGES } from '../utils/assets';
 
 /*************************** Sample posts ***************************/
 const posts = [
@@ -9,7 +10,7 @@ const posts = [
     title: 'Caching LLM calls for fun & profit',
     date: '2025-05-20',
     reading: '6 min',
-    banner: '/blog1.jpg',
+    banner: getAssetUrl(IMAGES.blog1),
     blurb: 'Slash costs 80% by memoising GPT responses intelligently.',
     views: '12.5K',
     category: 'Engineering'
@@ -19,7 +20,7 @@ const posts = [
     title: 'FAISS tricks nobody told you',
     date: '2025-04-10',
     reading: '7 min',
-    banner: '/blog2.jpg',
+    banner: getAssetUrl(IMAGES.blog2),
     blurb: 'Obscure index params that unlock 30% better recall.',
     views: '8.2K',
     category: 'AI/ML'
@@ -29,7 +30,7 @@ const posts = [
     title: 'Designing for 30-ms latency',
     date: '2025-03-02',
     reading: '5 min',
-    banner: '/blog3.jpg',
+    banner: getAssetUrl(IMAGES.blog3),
     blurb: 'Micro-copy & skeletons that hide network lag beautifully.',
     views: '15.7K',
     category: 'Design'
@@ -39,7 +40,7 @@ const posts = [
     title: 'Taming Voice Agents',
     date: '2025-01-12',
     reading: '8 min',
-    banner: '/blog4.jpg',
+    banner: getAssetUrl(IMAGES.blog4),
     blurb: 'From whisper to chat: building smooth voice pipelines.',
     views: '9.3K',
     category: 'AI/ML'

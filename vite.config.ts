@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
+    
+    // Set base path for subdirectory deployment (kunalis.me/kunal-website)
+    base: '/kunal-website/',
   
   // Disable service worker registration
   worker: {

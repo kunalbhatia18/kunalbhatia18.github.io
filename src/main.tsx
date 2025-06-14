@@ -3,6 +3,11 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 
+// Get base path for GitHub Pages subdirectory
+// For subdirectory: '/kunal-website' -> kunalis.me/kunal-website
+// For root domain: '' -> kunalis.me
+const basename = '/kunal-website'
+
 // Completely disable service worker functionality and suppress logs
 if ('serviceWorker' in navigator) {
   // Unregister any existing service workers
@@ -31,6 +36,7 @@ console.log = (...args) => {
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter
+    basename={basename}
     future={{
       v7_startTransition: true,
       v7_relativeSplatPath: true

@@ -185,7 +185,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/40 z-[45] md:hidden"
+              className="fixed inset-0 bg-black/40 z-[65] md:hidden"
               onClick={closeMenu}
             />
             
@@ -195,7 +195,7 @@ export function Navbar() {
               animate={{ x: '0%', opacity: 1 }}
               exit={{ x: '100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-80 z-[55] md:hidden overflow-hidden"
+              className="fixed top-0 right-0 h-full w-80 z-[70] md:hidden overflow-hidden"
               style={{
                 background: 'linear-gradient(135deg, rgba(15, 15, 29, 0.95) 0%, rgba(10, 10, 25, 0.98) 50%, rgba(5, 5, 15, 0.99) 100%)',
                 backdropFilter: 'blur(40px)',

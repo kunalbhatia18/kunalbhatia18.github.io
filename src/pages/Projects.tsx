@@ -1,6 +1,7 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar, Footer, SEO } from '../components';
+import { getAssetUrl, IMAGES } from '../utils/assets';
 
 // ───────────────────────── Data ─────────────────────────
 const projects = [
@@ -9,7 +10,7 @@ const projects = [
     title: 'Project Quicksilver',
     stack: 'FastAPI · GPT‑4o mini · Redis',
     blurb: '35ms inference gateway serving 10M+ requests daily',
-    img: '/proj1.jpg',
+    img: getAssetUrl(IMAGES.proj1),
     category: 'AI',
     role: 'Lead Engineer',
     link: '#',
@@ -20,7 +21,7 @@ const projects = [
     title: 'Swanari Data Observatory',
     stack: 'React · D3.js · PostgreSQL',
     blurb: 'Gender‑finance dashboard reaching 3M+ global users',
-    img: '/proj2.jpg',
+    img: getAssetUrl(IMAGES.proj2),
     category: 'DataViz',
     role: 'Full‑stack Dev',
     link: '#',
@@ -31,7 +32,7 @@ const projects = [
     title: 'Voice Gmail Copilot',
     stack: 'WebSpeech · OpenAI · Chrome API',
     blurb: 'Process 60 emails/min with natural voice commands',
-    img: '/proj3.jpg',
+    img: getAssetUrl(IMAGES.proj3),
     category: 'AI',
     role: 'Solo Maker',
     link: '#',
@@ -42,7 +43,7 @@ const projects = [
     title: 'Fraud Pipeline Kafka',
     stack: 'Kafka · MLflow · TensorFlow',
     blurb: '10× throughput boost for real-time fraud detection',
-    img: '/proj4.jpg',
+    img: getAssetUrl(IMAGES.proj4),
     category: 'Backend',
     role: 'ML Engineer',
     link: '#',
@@ -53,7 +54,7 @@ const projects = [
     title: 'TrueUPI',
     stack: 'Flutter · Firebase · Node.js',
     blurb: 'Crowdsourced UPI fraud prevention platform',
-    img: '/proj5.jpg',
+    img: getAssetUrl(IMAGES.proj5),
     category: 'Mobile',
     role: 'Founder',
     link: '#',
@@ -317,7 +318,7 @@ export default function Projects() {
         title="Projects - Kunal's Portfolio"
         description="Explore Kunal's portfolio: Project Quicksilver (35ms inference), Voice Gmail Copilot (60 emails/min), Swanari Dashboard (3M+ users). AI, ML, and full-stack projects."
         keywords={['Project Quicksilver', 'Voice Gmail Copilot', 'AI Projects', 'ML Portfolio', 'FastAPI Projects', 'React Projects', '35ms inference', 'Voice AI']}
-        url="https://kunalis.me/projects"
+        url="https://kunalis.me/kunal-website/projects"
         image="https://kunalis.me/proj1.jpg"
       />
       <main className="relative bg-[#0f0e17] font-inter text-white min-h-screen">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navbar, Footer, SEO } from '../components';
+import { getAssetUrl, IMAGES } from '../utils/assets';
 
 // ---- Hero ----
 function Hero() {
@@ -62,7 +63,7 @@ function BioBlock() {
           <div className="relative mx-auto w-60 h-60 sm:w-72 sm:h-72">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-2xl opacity-30 animate-pulse" />
             <img 
-              src="/profile-purple.jpg" 
+              src={getAssetUrl(IMAGES.profile)} 
               alt="Kunal portrait" 
               className="relative w-full h-full rounded-full object-cover border-2 border-white/10" 
             />
@@ -160,10 +161,10 @@ function SkillsMatrix() {
 // ---- Hobby Strip ----
 function HobbyStrip() {
   const hobbies = [
-    { src: '/marathon-race.jpg', label: 'Marathon Runner', desc: 'Sub-4hr finisher' },
-    { src: '/lakeside-adventure.jpg', label: 'Adventure Seeker', desc: 'Exploring horizons' },
-    { src: '/gym-training.jpg', label: 'Fitness Enthusiast', desc: 'Strength & discipline' },
-    { src: '/gym-transformation.jpg', label: 'Optimization Mindset', desc: 'Results-driven' }
+    { src: getAssetUrl(IMAGES.marathon), label: 'Marathon Runner', desc: 'Sub-4hr finisher' },
+    { src: getAssetUrl(IMAGES.adventure), label: 'Adventure Seeker', desc: 'Exploring horizons' },
+    { src: getAssetUrl(IMAGES.gym), label: 'Fitness Enthusiast', desc: 'Strength & discipline' },
+    { src: getAssetUrl(IMAGES.transformation), label: 'Optimization Mindset', desc: 'Results-driven' }
   ];
   
   return (
@@ -265,7 +266,7 @@ export default function About() {
         title="About Kunal - AI/ML Engineer & Marathoner"
         description="Meet Kunal Bhatia - Full-stack ML engineer from Bangalore. 4+ years shipping production AI, sub-4hr marathoner, rock vocalist. Building the future of AI at scale."
         keywords={['About Kunal Bhatia', 'ML Engineer Background', 'Bangalore Developer', 'Marathon Runner', 'Rock Vocalist', 'AI Engineer Story', 'Machine Learning Career']}
-        url="https://kunalis.me/about"
+        url="https://kunalis.me/kunal-website/about"
         image="https://kunalis.me/profile-purple.jpg"
       />
       <main className="relative min-h-screen w-full overflow-x-hidden bg-[#0f0e17] font-inter text-white">
