@@ -8,6 +8,7 @@ import time
 import logging
 from datetime import datetime, timezone
 from typing import Optional
+from collections import defaultdict
 
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +22,12 @@ logger = logging.getLogger(__name__)
 # Global rate limiting storage (total requests across all users)
 global_rate_limit = {"count": 0, "reset_time": 0}
 hourly_rate_limit = {"count": 0, "reset_time": 0}
+
+# Per-IP rate limiting storage
+ip_rate_limits = defaultdict(lambda: {
+    "hourly": {"count": 0, "reset_time": 0}, 
+    "daily": {"count": 0, "reset_time": 0}
+})
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -43,82 +50,135 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global rate limiting middleware
+# Global and per-IP rate limiting middleware
 @app.middleware("http")
-async def global_rate_limit_middleware(request: Request, call_next):
+async def rate_limit_middleware(request: Request, call_next):
     # Skip rate limiting for health check
     if request.url.path == "/health":
         return await call_next(request)
+    
+    # Get client IP (handle proxies)
+    client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    if not client_ip:
+        client_ip = request.headers.get("x-real-ip", "")
+    if not client_ip:
+        client_ip = request.client.host if request.client else "unknown"
     
     current_time = int(time.time())
     daily_reset = current_time // 86400 * 86400  # Reset at midnight UTC
     hourly_reset = current_time // 3600 * 3600   # Reset every hour
     
-    # Reset daily counter if it's a new day
+    # Reset global counters
     if global_rate_limit["reset_time"] != daily_reset:
         global_rate_limit["count"] = 0
         global_rate_limit["reset_time"] = daily_reset
         logger.info("Daily rate limit counter reset")
     
-    # Reset hourly counter if it's a new hour
     if hourly_rate_limit["reset_time"] != hourly_reset:
         hourly_rate_limit["count"] = 0
         hourly_rate_limit["reset_time"] = hourly_reset
         logger.info("Hourly rate limit counter reset")
     
-    # Check if hourly limit exceeded (more restrictive, check first)
-    if hourly_rate_limit["count"] >= 100:
-        logger.warning(f"Hourly rate limit exceeded. Requests this hour: {hourly_rate_limit['count']}")
+    # Reset per-IP counters
+    ip_limits = ip_rate_limits[client_ip]
+    if ip_limits["hourly"]["reset_time"] != hourly_reset:
+        ip_limits["hourly"] = {"count": 0, "reset_time": hourly_reset}
+    if ip_limits["daily"]["reset_time"] != daily_reset:
+        ip_limits["daily"] = {"count": 0, "reset_time": daily_reset}
+    
+    # Check per-IP limits first (more specific)
+    if ip_limits["hourly"]["count"] >= 100:
+        logger.warning(f"Per-IP hourly rate limit exceeded for {client_ip}. Requests this hour: {ip_limits['hourly']['count']}")
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
-                "error": "Hourly request limit exceeded for all users",
-                "hourly_limit": 100,
-                "daily_limit": 500,
+                "error": "Hourly request limit exceeded for your IP",
+                "ip_hourly_limit": 100,
+                "ip_daily_limit": 200,
+                "requests_used_this_hour": ip_limits["hourly"]["count"],
+                "requests_used_today": ip_limits["daily"]["count"],
+                "window": "1 hour",
+                "reset_time": hourly_reset + 3600,
+                "message": "You've reached your hourly limit of 100 requests. Please try again in the next hour."
+            }
+        )
+    
+    if ip_limits["daily"]["count"] >= 200:
+        logger.warning(f"Per-IP daily rate limit exceeded for {client_ip}. Requests today: {ip_limits['daily']['count']}")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={
+                "error": "Daily request limit exceeded for your IP",
+                "ip_hourly_limit": 100,
+                "ip_daily_limit": 200,
+                "requests_used_this_hour": ip_limits["hourly"]["count"],
+                "requests_used_today": ip_limits["daily"]["count"],
+                "window": "24 hours",
+                "reset_time": daily_reset + 86400,
+                "message": "You've reached your daily limit of 200 requests. Please try again tomorrow."
+            }
+        )
+    
+    # Check global limits (fallback protection)
+    if hourly_rate_limit["count"] >= 100:
+        logger.warning(f"Global hourly rate limit exceeded. Requests this hour: {hourly_rate_limit['count']}")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={
+                "error": "Global hourly request limit exceeded",
+                "global_hourly_limit": 100,
+                "global_daily_limit": 500,
                 "requests_used_this_hour": hourly_rate_limit["count"],
                 "requests_used_today": global_rate_limit["count"],
                 "window": "1 hour",
                 "reset_time": hourly_reset + 3600,
-                "message": "The API has reached its hourly limit of 100 requests. Please try again in the next hour."
+                "message": "The API has reached its global hourly limit of 100 requests. Please try again in the next hour."
             }
         )
     
-    # Check if daily limit exceeded
     if global_rate_limit["count"] >= 500:
-        logger.warning(f"Daily rate limit exceeded. Total requests today: {global_rate_limit['count']}")
+        logger.warning(f"Global daily rate limit exceeded. Total requests today: {global_rate_limit['count']}")
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
-                "error": "Daily request limit exceeded for all users",
-                "daily_limit": 500,
-                "hourly_limit": 100,
+                "error": "Global daily request limit exceeded",
+                "global_daily_limit": 500,
+                "global_hourly_limit": 100,
                 "requests_used_today": global_rate_limit["count"],
                 "requests_used_this_hour": hourly_rate_limit["count"],
                 "window": "24 hours",
                 "reset_time": daily_reset + 86400,
-                "message": "The API has reached its daily limit of 500 requests. Please try again tomorrow."
+                "message": "The API has reached its global daily limit of 500 requests. Please try again tomorrow."
             }
         )
     
     # Process request
     response = await call_next(request)
     
-    # Increment both counters only for successful requests to chat endpoint
+    # Increment all counters only for successful requests to chat endpoint
     if response.status_code < 400 and request.url.path == "/api/chat":
         global_rate_limit["count"] += 1
         hourly_rate_limit["count"] += 1
-        logger.info(f"Request processed. Today: {global_rate_limit['count']}/500, This hour: {hourly_rate_limit['count']}/100")
+        ip_limits["hourly"]["count"] += 1
+        ip_limits["daily"]["count"] += 1
+        logger.info(f"Request from {client_ip} processed. IP: {ip_limits['hourly']['count']}/100 hourly, {ip_limits['daily']['count']}/200 daily. Global: {global_rate_limit['count']}/500 daily, {hourly_rate_limit['count']}/100 hourly")
     
-    # Add rate limit headers
-    response.headers["X-RateLimit-Daily-Limit"] = "500"
-    response.headers["X-RateLimit-Daily-Used"] = str(global_rate_limit["count"])
-    response.headers["X-RateLimit-Daily-Remaining"] = str(500 - global_rate_limit["count"])
-    response.headers["X-RateLimit-Daily-Reset"] = str(daily_reset + 86400)
+    # Add rate limit headers (show IP-specific limits)
+    response.headers["X-RateLimit-IP-Hourly-Limit"] = "100"
+    response.headers["X-RateLimit-IP-Hourly-Used"] = str(ip_limits["hourly"]["count"])
+    response.headers["X-RateLimit-IP-Hourly-Remaining"] = str(100 - ip_limits["hourly"]["count"])
+    response.headers["X-RateLimit-IP-Hourly-Reset"] = str(hourly_reset + 3600)
     
-    response.headers["X-RateLimit-Hourly-Limit"] = "100"
-    response.headers["X-RateLimit-Hourly-Used"] = str(hourly_rate_limit["count"])
-    response.headers["X-RateLimit-Hourly-Remaining"] = str(100 - hourly_rate_limit["count"])
-    response.headers["X-RateLimit-Hourly-Reset"] = str(hourly_reset + 3600)
+    response.headers["X-RateLimit-IP-Daily-Limit"] = "200"
+    response.headers["X-RateLimit-IP-Daily-Used"] = str(ip_limits["daily"]["count"])
+    response.headers["X-RateLimit-IP-Daily-Remaining"] = str(200 - ip_limits["daily"]["count"])
+    response.headers["X-RateLimit-IP-Daily-Reset"] = str(daily_reset + 86400)
+    
+    # Also include global limits for reference
+    response.headers["X-RateLimit-Global-Daily-Limit"] = "500"
+    response.headers["X-RateLimit-Global-Daily-Used"] = str(global_rate_limit["count"])
+    response.headers["X-RateLimit-Global-Hourly-Limit"] = "100"
+    response.headers["X-RateLimit-Global-Hourly-Used"] = str(hourly_rate_limit["count"])
     
     return response
 
@@ -150,13 +210,19 @@ async def health_check():
         version="1.0.0",
         model="gpt-4.1-nano-2025-04-14",
         rate_limit={
-            "daily_limit": 500,
-            "hourly_limit": 100,
-            "window": "24 hours / 1 hour",
-            "requests_used_today": global_rate_limit["count"],
-            "requests_remaining_today": 500 - global_rate_limit["count"],
-            "requests_used_this_hour": hourly_rate_limit["count"],
-            "requests_remaining_this_hour": 100 - hourly_rate_limit["count"]
+            "per_ip": {
+                "hourly_limit": 100,
+                "daily_limit": 200,
+                "window": "1 hour / 24 hours per IP"
+            },
+            "global": {
+                "hourly_limit": 100,
+                "daily_limit": 500,
+                "requests_used_today": global_rate_limit["count"],
+                "requests_remaining_today": 500 - global_rate_limit["count"],
+                "requests_used_this_hour": hourly_rate_limit["count"],
+                "requests_remaining_this_hour": 100 - hourly_rate_limit["count"]
+            }
         },
         cors_origins=[
             "https://kunalis.me",
@@ -177,13 +243,19 @@ async def root():
         "model": "gpt-4.1-nano-2025-04-14",
         "status": "running",
         "rate_limit": {
-            "daily_limit": 500,
-            "hourly_limit": 100,
-            "window": "24 hours / 1 hour",
-            "requests_used_today": global_rate_limit["count"],
-            "requests_remaining_today": 500 - global_rate_limit["count"],
-            "requests_used_this_hour": hourly_rate_limit["count"],
-            "requests_remaining_this_hour": 100 - hourly_rate_limit["count"]
+            "per_ip": {
+                "hourly_limit": 100,
+                "daily_limit": 200,
+                "window": "1 hour / 24 hours per IP"
+            },
+            "global": {
+                "hourly_limit": 100,
+                "daily_limit": 500,
+                "requests_used_today": global_rate_limit["count"],
+                "requests_remaining_today": 500 - global_rate_limit["count"],
+                "requests_used_this_hour": hourly_rate_limit["count"],
+                "requests_remaining_this_hour": 100 - hourly_rate_limit["count"]
+            }
         },
         "cors_origins": [
             "https://kunalis.me",
@@ -207,6 +279,14 @@ async def chat(request: ChatRequest):
         )
     
     try:
+        # Handle warming/ping requests efficiently (no OpenAI call needed)
+        if request.message.lower().strip() in ["ping", "warm", "warmup"]:
+            return ChatResponse(
+                response="🔥 API warmed up and ready!",
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                response_time_ms=int((time.time() - start_time) * 1000)
+            )
+            
         import openai
         
         client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))

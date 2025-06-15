@@ -116,6 +116,18 @@ export const ChatWidget = memo(() => {
     return null; // No prewritten response, use API (including coffee)
   }, []);
 
+  // API warming function - runs in background without affecting UX
+  const warmupAPI = useCallback(async () => {
+    try {
+      // Send a lightweight warming request in the background
+      await chatAPI.sendMessage("ping");
+      console.log("✅ API warmed up successfully");
+    } catch (error) {
+      // Silently fail - this is just for warming, not critical
+      console.log("🔥 API warming complete (expected to fail silently)");
+    }
+  }, []);
+
   const ask = useCallback(async (q: string) => {
     const trimmedQ = q.trim();
     if (!trimmedQ) return;
@@ -142,9 +154,11 @@ export const ChatWidget = memo(() => {
     const prewrittenResponse = getPrewrittenResponse(trimmedQ);
     
     if (prewrittenResponse) {
-      // Use prewritten response (no API call)
+      // Use prewritten response (no API call) + warm up API in background
       setTimeout(() => {
         stream(botId, prewrittenResponse);
+        // Warm up the API in background for next potential custom question
+        warmupAPI();
       }, 100);
     } else {
       // Call the real API for all other questions (including coffee)
@@ -161,6 +175,14 @@ export const ChatWidget = memo(() => {
         if (error instanceof Error) {
           if (error.message.includes('Unable to connect')) {
             errorMessage = '🔌 I\'m having trouble connecting right now. Please check your internet connection and try again!';
+          } else if (error.message.includes('Daily request limit exceeded for your IP')) {
+            errorMessage = '⏰ You\'ve reached your daily chat limit (200 requests)! I\'ll be back tomorrow with fresh energy. Thanks for understanding!';
+          } else if (error.message.includes('Hourly request limit exceeded for your IP')) {
+            errorMessage = '⏰ You\'ve reached your hourly chat limit (100 requests)! Please try again in the next hour. Thanks for your patience!';
+          } else if (error.message.includes('Global daily request limit')) {
+            errorMessage = '⏰ The chat service has reached its daily limit! This means lots of people are using it. Please try again tomorrow!';
+          } else if (error.message.includes('Global hourly request limit')) {
+            errorMessage = '⏰ The chat service is getting lots of requests right now! Please try again in the next hour.';
           } else if (error.message.includes('Daily request limit')) {
             errorMessage = '⏰ I\'ve reached my daily chat limit (500 requests)! I\'ll be back tomorrow with fresh energy. Thanks for understanding!';
           } else if (error.message.includes('Hourly request limit')) {
@@ -181,7 +203,7 @@ export const ChatWidget = memo(() => {
         }, 100);
       }
     }
-  }, [stream, getPrewrittenResponse]);
+  }, [stream, getPrewrittenResponse, warmupAPI]);
 
   // BLACKISH: Dark gradient with subtle variation
   const chatWindowStyle = useMemo(() => ({

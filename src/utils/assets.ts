@@ -24,11 +24,10 @@ export const IMAGES = {
   transformation: '/gym-transformation.jpg',
   
   // Project images
-  proj1: '/proj1.jpg',
-  proj2: '/proj2.jpg', 
-  proj3: '/proj3.jpg',
-  proj4: '/proj4.jpg',
-  proj5: '/proj5.jpg',
+  proj1: '/audio-gmail.png',
+  proj2: '/delegate.png', 
+  proj3: '/bias.png',
+  proj4: '/eeg-neuro.png',
   
   // Blog images
   blog1: '/blog1.jpg',
