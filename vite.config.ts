@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     
     // Set base path for subdirectory deployment (kunalis.me/kunal-website)
-    base: '/kunal-website/',
+    base: '/',
   
   // Disable service worker registration
   worker: {

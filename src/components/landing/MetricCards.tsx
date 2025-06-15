@@ -18,7 +18,7 @@ export const MetricCards = memo(() => {
     },
     { 
       label: 'COST / REQ', 
-      value: '$0.002', 
+      value: '$0.00008', 
       color: 'from-emerald-500 to-teal-500',
       hover: 'Cheaper than your morning coffee! ☕'
     },

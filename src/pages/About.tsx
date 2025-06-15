@@ -266,7 +266,7 @@ export default function About() {
         title="About Kunal - AI/ML Engineer & Marathoner"
         description="Meet Kunal Bhatia - Full-stack ML engineer from Bangalore. 4+ years shipping production AI, sub-4hr marathoner, rock vocalist. Building the future of AI at scale."
         keywords={['About Kunal Bhatia', 'ML Engineer Background', 'Bangalore Developer', 'Marathon Runner', 'Rock Vocalist', 'AI Engineer Story', 'Machine Learning Career']}
-        url="https://kunalis.me/kunal-website/about"
+        url="https://kunalis.me/about"
         image="https://kunalis.me/profile-purple.jpg"
       />
       <main className="relative min-h-screen w-full overflow-x-hidden bg-[#0f0e17] font-inter text-white">

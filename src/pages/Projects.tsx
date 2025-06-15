@@ -319,7 +319,7 @@ export default function Projects() {
         title="Projects - Kunal's Portfolio"
         description="Explore Kunal's AI portfolio: Voice Gmail Copilot (60 emails/min), Delegate AI (85% time saved), AI Bias Mitigation Co-Pilot, Synthetic EEG Generator. Advanced AI/ML projects."
         keywords={['Voice Gmail Copilot', 'Delegate AI', 'AI Bias Mitigation', 'Synthetic EEG Generator', 'AI Projects', 'ML Portfolio', 'OpenAI Real-time API', 'TensorFlow', 'PyTorch']}
-        url="https://kunalis.me/kunal-website/projects"
+        url="https://kunalis.me/projects"
         image="https://kunalis.me/proj1.jpg"
       />
       <main className="relative bg-[#0f0e17] font-inter text-white min-h-screen">

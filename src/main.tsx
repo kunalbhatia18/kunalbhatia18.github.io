@@ -6,7 +6,7 @@ import App from './App.tsx'
 // Get base path for GitHub Pages subdirectory
 // For subdirectory: '/kunal-website' -> kunalis.me/kunal-website
 // For root domain: '' -> kunalis.me
-const basename = '/kunal-website'
+const basename = '/'
 
 // Completely disable service worker functionality and suppress logs
 if ('serviceWorker' in navigator) {
