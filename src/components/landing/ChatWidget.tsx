@@ -35,7 +35,7 @@ export const ChatWidget = memo(() => {
   });
 
   // Ref for stream interval cleanup
-  const streamIntervalRef = useRef<number | null>(null);
+  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // OPTIMIZED: Initialize with cleanup
   useEffect(() => { 
