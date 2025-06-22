@@ -16,8 +16,8 @@ export function SEO({
   url = "https://kunalis.me"
 }: SEOProps) {
   useEffect(() => {
-    // Update document title
-    document.title = `${title} | Kunal B`;
+    // Update document title - don't add suffix if title already contains "Kunal B"
+    document.title = title.includes('Kunal B') ? title : `${title} | Kunal B`;
     
     // Update meta tags
     const metaTags = {

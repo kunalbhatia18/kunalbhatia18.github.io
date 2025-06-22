@@ -81,7 +81,7 @@ function BioBlock() {
             <p className="text-lg leading-relaxed text-white/80">
               I'm a Bangalore‑based full‑stack ML engineer who loves shaving milliseconds. I've shipped
               dashboards to <span className="text-white font-semibold">3M+ users</span>, cut inference 
-              latency <span className="text-white font-semibold">10×</span>, and pitched at YC.
+              latency <span className="text-white font-semibold">10×</span>, and built production systems that scale.
             </p>
             <p className="text-lg leading-relaxed text-white/70">
               Current obsession: voice‑first agents that talk like humans and think like supercomputers.
